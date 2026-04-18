@@ -1,0 +1,17 @@
+{
+  "name": "stream-chat",
+  "version": "1.0.0",
+  "description": "Full-stack real-time chat and video meeting app.",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend --legacy-peer-deps",
+    "setup:certs": "node scripts/generate-certs.js",
+    "build:widget": "npm run build:widget --prefix frontend",
+    "dev": "npm run build:widget && concurrently --names \"BE,FE,WIDGET\" --prefix-colors \"cyan,green,yellow\" --kill-others-on-fail \"npm run dev --prefix backend\" \"npm run start:lan --prefix frontend\" \"node frontend/node_modules/.bin/http-server frontend/dist/widget/browser -p 4500 -c-1 --cors --ssl --ssl-key certs/server.key --ssl-cert certs/server.crt\"",
+    "dev:local": "npm run build:widget && concurrently --names \"BE,FE,WIDGET\" --prefix-colors \"cyan,green,yellow\" --kill-others-on-fail \"npm run dev --prefix backend\" \"npm run start --prefix frontend\" \"node frontend/node_modules/.bin/http-server frontend/dist/widget/browser -p 4500 -c-1 --cors --ssl --ssl-key certs/server.key --ssl-cert certs/server.crt\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "selfsigned": "^2.4.1"
+  }
+}

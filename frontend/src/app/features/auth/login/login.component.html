@@ -1,0 +1,91 @@
+<div class="login-page">
+  <div class="login-card">
+    <!-- Logo -->
+    <div class="login-card__logo">
+      <img src="assets/helen-logo.svg" alt="Helen" class="login-card__logo-img" />
+    </div>
+
+    <h1 class="login-card__title">Welcome back</h1>
+    <p class="login-card__subtitle">Sign in to continue to your workspace</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <!-- User ID -->
+      <div class="form-field">
+        <label for="userId">User ID</label>
+        <input
+          id="userId"
+          type="text"
+          inputmode="text"
+          formControlName="userId"
+          placeholder="e.g. john_doe"
+          autocomplete="username"
+        />
+        @if (getFieldError('userId')) {
+          <span class="error-msg">{{ getFieldError('userId') }}</span>
+        }
+      </div>
+
+      <!-- Display Name -->
+      <div class="form-field" style="margin-top: 16px">
+        <label for="userName">Display Name</label>
+        <input
+          id="userName"
+          type="text"
+          inputmode="text"
+          formControlName="userName"
+          placeholder="e.g. John Doe"
+          autocomplete="name"
+        />
+        @if (getFieldError('userName')) {
+          <span class="error-msg">{{ getFieldError('userName') }}</span>
+        }
+      </div>
+
+      <!-- Avatar URL (optional) -->
+      <div class="form-field" style="margin-top: 16px">
+        <label for="userImage">Avatar URL <span class="optional">(optional)</span></label>
+        <input
+          id="userImage"
+          type="url"
+          inputmode="url"
+          formControlName="userImage"
+          placeholder="https://example.com/avatar.png"
+        />
+        @if (getFieldError('userImage')) {
+          <span class="error-msg">{{ getFieldError('userImage') }}</span>
+        }
+      </div>
+
+      <!-- Error -->
+      @if (errorMessage()) {
+        <div class="login-error">{{ errorMessage() }}</div>
+      }
+
+      <!-- Submit -->
+      <button
+        type="submit"
+        class="btn btn--primary login-card__submit"
+        [disabled]="isLoading()"
+      >
+        @if (isLoading()) {
+          <span class="spinner"></span>
+        } @else {
+          Sign In
+        }
+      </button>
+    </form>
+
+    <div class="login-divider">
+      <span>or</span>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn--ghost login-card__guest"
+      [disabled]="isLoading()"
+      (click)="loginAsGuest()"
+    >
+      Continue as Guest
+    </button>
+  </div>
+</div>

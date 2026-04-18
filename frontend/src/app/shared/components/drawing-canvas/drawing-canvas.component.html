@@ -1,0 +1,25 @@
+<canvas
+  #canvas
+  class="drawing-canvas"
+  [class.drawing-canvas--active]="mode !== 'off'"
+  [class.drawing-canvas--erase]="mode === 'erase'"
+  [class.drawing-canvas--pointer]="mode === 'pointer'"
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+  (pointerup)="onPointerUp()"
+  (pointerleave)="onPointerUp()"
+></canvas>
+
+<!-- Remote participant pointers -->
+@for (entry of remotePointerEntries; track entry[0]) {
+  <div
+    class="drawing-canvas__remote-pointer"
+    [style.left]="entry[1].x * 100 + '%'"
+    [style.top]="entry[1].y * 100 + '%'"
+  >
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M4 0l16 12-7 1-4 8z"/>
+    </svg>
+    <span class="drawing-canvas__pointer-label">{{ entry[1].userName }}</span>
+  </div>
+}

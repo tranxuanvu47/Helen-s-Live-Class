@@ -1,0 +1,411 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2339" pageHeight="1654" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         LAYER 1 — STREAM CLOUD (External Services)
+    ══════════════════════════════════════════════════════════════════ -->
+    <mxCell id="cloud" value="☁  STREAM CLOUD  —  External Services  (dashboard.getstream.io)"
+      style="swimlane;startSize=36;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;fontColor=#003366;arcSize=2;"
+      vertex="1" parent="1">
+      <mxGeometry x="20" y="20" width="2200" height="235" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sc_api" value="&lt;b&gt;Stream Chat API&lt;/b&gt;&lt;br/&gt;chat.stream-io-api.com&lt;br/&gt;─────────────────────&lt;br/&gt;• POST /channels/{id}/message&lt;br/&gt;• POST /channels/{id}/event&lt;br/&gt;• GET  /channels  (query)&lt;br/&gt;• WebSocket — realtime events"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=10;arcSize=4;"
+      vertex="1" parent="cloud">
+      <mxGeometry x="100" y="50" width="420" height="155" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sv_api" value="&lt;b&gt;Stream Video API&lt;/b&gt;&lt;br/&gt;video.stream-io.com&lt;br/&gt;─────────────────────&lt;br/&gt;• WebRTC SFU media server&lt;br/&gt;• ICE / SDP signaling&lt;br/&gt;• Peer media relay&lt;br/&gt;• Call state management"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=10;arcSize=4;"
+      vertex="1" parent="cloud">
+      <mxGeometry x="640" y="50" width="400" height="155" as="geometry" />
+    </mxCell>
+
+    <mxCell id="rate_limit_note" value="&lt;b&gt;⚠  Rate Limit  (429)&lt;/b&gt;&lt;br/&gt;/event endpoint throttled&lt;br/&gt;─────────────────────&lt;br/&gt;typing.start + typing.stop&lt;br/&gt;= 2 calls × msg count&lt;br/&gt;&lt;font color=&quot;#00884a&quot;&gt;✓ Fixed: throttle 3 s&lt;/font&gt;&lt;br/&gt;&lt;font color=&quot;#00884a&quot;&gt;✓ Fixed: debounce 1 s&lt;/font&gt;"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6861e;fontSize=11;align=left;spacingLeft=10;arcSize=4;"
+      vertex="1" parent="cloud">
+      <mxGeometry x="1200" y="50" width="330" height="155" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sc_dashboard" value="&lt;b&gt;Stream Dashboard&lt;/b&gt;&lt;br/&gt;dashboard.getstream.io&lt;br/&gt;─────────────────────&lt;br/&gt;• API Key / Secret mgmt&lt;br/&gt;• Usage analytics&lt;br/&gt;• Rate limit configuration&lt;br/&gt;• Channel type settings"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=10;arcSize=4;"
+      vertex="1" parent="cloud">
+      <mxGeometry x="1640" y="50" width="380" height="155" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         LAYER 2 — FRONTEND (Angular 17)
+    ══════════════════════════════════════════════════════════════════ -->
+    <mxCell id="frontend" value="🅰  FRONTEND  —  Angular 17  (Standalone Components  +  stream-chat-angular  +  @stream-io/video-react-sdk)"
+      style="swimlane;startSize=36;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;fontColor=#1a3c1a;arcSize=2;"
+      vertex="1" parent="1">
+      <mxGeometry x="20" y="295" width="2200" height="798" as="geometry" />
+    </mxCell>
+
+    <!-- Routes bar -->
+    <mxCell id="routes_bar" value="&lt;b&gt;app.routes.ts&lt;/b&gt;  |  /  →  /login   •   /login  →  LoginComponent (lazy)   •   /chat  →  ChatLayoutComponent (lazy, authGuard)   •   /meeting/:callId  →  MeetingRoomComponent (lazy, authGuard)   •   **  →  /login"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;arcSize=2;"
+      vertex="1" parent="frontend">
+      <mxGeometry x="40" y="48" width="2110" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- App shell -->
+    <mxCell id="app_comp" value="&lt;b&gt;AppComponent&lt;/b&gt;&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;&lt;router-outlet /&gt;&lt;br/&gt;StreamI18nService.setTranslation()&lt;/font&gt;"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f4f8;strokeColor=#5a9cc5;fontSize=11;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="frontend">
+      <mxGeometry x="40" y="103" width="210" height="68" as="geometry" />
+    </mxCell>
+
+    <mxCell id="app_config" value="&lt;b&gt;app.config.ts&lt;/b&gt;&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;provideRouter(routes)&lt;br/&gt;provideHttpClient + [authInterceptor]&lt;br/&gt;StreamChatModule&lt;br/&gt;StreamAutocompleteTextareaModule&lt;/font&gt;"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f4f8;strokeColor=#5a9cc5;fontSize=11;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="frontend">
+      <mxGeometry x="268" y="103" width="300" height="68" as="geometry" />
+    </mxCell>
+
+    <!-- ── FEATURES group ── -->
+    <mxCell id="features_grp" value="features/  (lazy-loaded route components)"
+      style="swimlane;startSize=25;fillColor=#fafafa;strokeColor=#aaaaaa;fontSize=12;fontStyle=1;arcSize=2;"
+      vertex="1" parent="frontend">
+      <mxGeometry x="40" y="192" width="2110" height="337" as="geometry" />
+    </mxCell>
+
+    <!-- login feature -->
+    <mxCell id="login_feat" value="auth/login/"
+      style="swimlane;startSize=22;fillColor=#fffde7;strokeColor=#f9a825;fontSize=11;fontStyle=1;arcSize=2;"
+      vertex="1" parent="features_grp">
+      <mxGeometry x="18" y="22" width="322" height="293" as="geometry" />
+    </mxCell>
+
+    <mxCell id="login_comp" value="&lt;b&gt;LoginComponent&lt;/b&gt;&lt;br/&gt;• ReactiveForm: userId, userName, userImage&lt;br/&gt;• onSubmit() → AuthService.login()&lt;br/&gt;• loginAsGuest() → AuthService.loginAsGuest()&lt;br/&gt;• Signals: isLoading(), errorMessage()&lt;br/&gt;• On success: StreamChatService.connect()"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#f9a825;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="login_feat">
+      <mxGeometry x="14" y="28" width="285" height="115" as="geometry" />
+    </mxCell>
+
+    <mxCell id="login_html" value="login.component.html&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;Bosch gear logo  •  form  •  Guest button&lt;/font&gt;"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#f9a825;fontSize=10;arcSize=4;"
+      vertex="1" parent="login_feat">
+      <mxGeometry x="14" y="155" width="285" height="44" as="geometry" />
+    </mxCell>
+
+    <mxCell id="login_scss" value="login.component.scss&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;Bosch light card  •  #f4f4f4 bg  •  radius 4px&lt;/font&gt;"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#f9a825;fontSize=10;arcSize=4;"
+      vertex="1" parent="login_feat">
+      <mxGeometry x="14" y="210" width="285" height="44" as="geometry" />
+    </mxCell>
+
+    <!-- chat feature -->
+    <mxCell id="chat_feat" value="chat/"
+      style="swimlane;startSize=22;fillColor=#e8f5e9;strokeColor=#43a047;fontSize=11;fontStyle=1;arcSize=2;"
+      vertex="1" parent="features_grp">
+      <mxGeometry x="360" y="22" width="876" height="293" as="geometry" />
+    </mxCell>
+
+    <mxCell id="chat_layout" value="ChatLayoutComponent  —  /chat"
+      style="swimlane;startSize=22;fillColor=#ffffff;strokeColor=#43a047;fontSize=10;fontStyle=1;arcSize=2;"
+      vertex="1" parent="chat_feat">
+      <mxGeometry x="14" y="28" width="840" height="247" as="geometry" />
+    </mxCell>
+
+    <mxCell id="header_comp" value="&lt;b&gt;HeaderComponent&lt;/b&gt;&lt;br/&gt;• Bosch nav bar (52px, white, border-bottom)&lt;br/&gt;• Gear logo (red) + &quot;StreamChat&quot;&lt;br/&gt;• Nav: Chats / New Channel / Start Meeting&lt;br/&gt;• @Output: newChannel, startMeeting&lt;br/&gt;• logout() via StreamChatService"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#43a047;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="chat_layout">
+      <mxGeometry x="14" y="28" width="252" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="modal_comp" value="&lt;b&gt;CreateChannelModal&lt;/b&gt;&lt;br/&gt;• ReactiveForm: name, desc, members&lt;br/&gt;• onSubmit()&lt;br/&gt;  → StreamChatService.createChannel()&lt;br/&gt;  → POST /api/channels&lt;br/&gt;• @Output: closed, created"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#43a047;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="chat_layout">
+      <mxGeometry x="282" y="28" width="270" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="start_meeting" value="&lt;b&gt;Start Meeting action&lt;/b&gt;&lt;br/&gt;• POST /api/meetings → { callId }&lt;br/&gt;• StreamVideoService.connectClient()&lt;br/&gt;• router.navigate /meeting/:callId"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#43a047;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="chat_layout">
+      <mxGeometry x="568" y="28" width="258" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sdk_ch_list" value="&lt;b&gt;&lt;i&gt;&lt;stream-channel-list /&gt;&lt;/i&gt;&lt;/b&gt;  (SDK — dashed = library component)&lt;br/&gt;• ChannelService.init(filter, sort, options)&lt;br/&gt;• Realtime updates via WebSocket&lt;br/&gt;• Channel previews + unread badges&lt;br/&gt;• Active channel state"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontSize=10;align=left;spacingLeft=8;arcSize=4;dashed=1;strokeWidth=2;"
+      vertex="1" parent="chat_layout">
+      <mxGeometry x="14" y="150" width="268" height="85" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sdk_channel" value="&lt;b&gt;&lt;i&gt;&lt;stream-channel&gt;&lt;/i&gt;&lt;/b&gt;  (SDK)&lt;br/&gt;• &lt;stream-notification-list /&gt;&lt;br/&gt;• &lt;stream-message-list /&gt;&lt;br/&gt;• &lt;stream-message-input /&gt;&lt;br/&gt;  → typingStarted() — throttle 3000 ms&lt;br/&gt;  → typingStopped() — debounce 1000 ms"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontSize=10;align=left;spacingLeft=8;arcSize=4;dashed=1;strokeWidth=2;"
+      vertex="1" parent="chat_layout">
+      <mxGeometry x="298" y="150" width="528" height="85" as="geometry" />
+    </mxCell>
+
+    <!-- meeting feature -->
+    <mxCell id="meeting_feat" value="meeting/"
+      style="swimlane;startSize=22;fillColor=#fce4ec;strokeColor=#c62828;fontSize=11;fontStyle=1;arcSize=2;"
+      vertex="1" parent="features_grp">
+      <mxGeometry x="1256" y="22" width="384" height="293" as="geometry" />
+    </mxCell>
+
+    <mxCell id="meeting_comp" value="MeetingRoomComponent  —  /meeting/:callId"
+      style="swimlane;startSize=22;fillColor=#ffffff;strokeColor=#c62828;fontSize=10;fontStyle=1;arcSize=2;"
+      vertex="1" parent="meeting_feat">
+      <mxGeometry x="14" y="28" width="350" height="247" as="geometry" />
+    </mxCell>
+
+    <mxCell id="video_tile" value="&lt;b&gt;VideoTileComponent × N participants&lt;/b&gt;&lt;br/&gt;• @Input: participant (SDK Participant type)&lt;br/&gt;• Renders video / audio tracks&lt;br/&gt;• Name badge + mute indicator overlay"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="meeting_comp">
+      <mxGeometry x="14" y="28" width="316" height="85" as="geometry" />
+    </mxCell>
+
+    <mxCell id="meeting_ctrl" value="• toggleMic() / toggleCamera()&lt;br/&gt;• leaveCall() → StreamVideoService.leaveCall()&lt;br/&gt;• After leave: router.navigate('/chat')"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="meeting_comp">
+      <mxGeometry x="14" y="123" width="316" height="62" as="geometry" />
+    </mxCell>
+
+    <mxCell id="meeting_scss" value="meeting-room.component.scss  •  video-tile.component.scss"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontSize=10;arcSize=4;"
+      vertex="1" parent="meeting_comp">
+      <mxGeometry x="14" y="198" width="316" height="32" as="geometry" />
+    </mxCell>
+
+    <!-- shared components note -->
+    <mxCell id="shared_note" value="&lt;b&gt;shared/components/&lt;/b&gt;&lt;br/&gt;HeaderComponent&lt;br/&gt;VideoTileComponent"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8eaf6;strokeColor=#5c6bc0;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="features_grp">
+      <mxGeometry x="1660" y="22" width="220" height="85" as="geometry" />
+    </mxCell>
+
+    <!-- ── CORE group ── -->
+    <mxCell id="core_grp" value="core/  (services  •  guards  •  interceptors  •  models)"
+      style="swimlane;startSize=25;fillColor=#f3e5f5;strokeColor=#8e24aa;fontSize=12;fontStyle=1;arcSize=2;"
+      vertex="1" parent="frontend">
+      <mxGeometry x="40" y="554" width="2110" height="158" as="geometry" />
+    </mxCell>
+
+    <mxCell id="auth_svc" value="&lt;b&gt;AuthService&lt;/b&gt;&lt;br/&gt;• login(payload) → POST /api/auth/token&lt;br/&gt;  tap: persist(user) + BehaviorSubject.next()&lt;br/&gt;• loginAsGuest() → POST /api/auth/guest&lt;br/&gt;• logout() → removeItem + navigate /login&lt;br/&gt;• getToken() • isLoggedIn getter"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8e24aa;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="core_grp">
+      <mxGeometry x="18" y="32" width="360" height="112" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sc_svc" value="&lt;b&gt;StreamChatService&lt;/b&gt;&lt;br/&gt;• connect(userId, userName, token, img)&lt;br/&gt;  → ChatClientService.init(apiKey, user, token)&lt;br/&gt;  → ChannelService.init(filter, sort, opts)&lt;br/&gt;  → patchTypingThrottle() ← throttle 3s / debounce 1s&lt;br/&gt;• createChannel(payload) → POST /api/channels&lt;br/&gt;• refreshChannels(userId) • disconnect()"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8e24aa;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="core_grp">
+      <mxGeometry x="394" y="32" width="530" height="112" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sv_svc" value="&lt;b&gt;StreamVideoService&lt;/b&gt;&lt;br/&gt;• connectClient(userId, token)&lt;br/&gt;  → new StreamVideo(client)&lt;br/&gt;• joinCall(callId)&lt;br/&gt;  → client.call('default', callId).join()&lt;br/&gt;• leaveCall() → call.leave()&lt;br/&gt;• disconnectClient()"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#8e24aa;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="core_grp">
+      <mxGeometry x="940" y="32" width="380" height="112" as="geometry" />
+    </mxCell>
+
+    <mxCell id="auth_guard" value="&lt;b&gt;authGuard&lt;/b&gt;&lt;br/&gt;Functional guard&lt;br/&gt;Checks localStorage token&lt;br/&gt;→ allow route&lt;br/&gt;→ redirect /login"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ede7f6;strokeColor=#6a1b9a;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="core_grp">
+      <mxGeometry x="1338" y="32" width="210" height="112" as="geometry" />
+    </mxCell>
+
+    <mxCell id="auth_intcp" value="&lt;b&gt;auth.interceptor&lt;/b&gt;&lt;br/&gt;Functional HTTP interceptor&lt;br/&gt;Reads token from localStorage&lt;br/&gt;Clones request with&lt;br/&gt;Authorization: Bearer &lt;token&gt;"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ede7f6;strokeColor=#6a1b9a;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="core_grp">
+      <mxGeometry x="1564" y="32" width="220" height="112" as="geometry" />
+    </mxCell>
+
+    <mxCell id="models_cell" value="&lt;b&gt;models/&lt;/b&gt;&lt;br/&gt;AuthUser&lt;br/&gt;LoginRequest / AuthResponse&lt;br/&gt;CreateChannelRequest/Response&lt;br/&gt;MeetingResponse"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ede7f6;strokeColor=#6a1b9a;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="core_grp">
+      <mxGeometry x="1800" y="32" width="290" height="112" as="geometry" />
+    </mxCell>
+
+    <!-- Config notes in frontend -->
+    <mxCell id="styles_note" value="&lt;b&gt;styles.scss&lt;/b&gt; — Bosch Design Tokens&lt;br/&gt;--color-primary: #005691 (Bosch blue)&lt;br/&gt;--color-bg: #f4f4f4  • --color-surface: #fff&lt;br/&gt;--radius-sm: 4px  (crisp, professional)"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#388e3c;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="frontend">
+      <mxGeometry x="40" y="728" width="360" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="proxy_note" value="&lt;b&gt;proxy.conf.json&lt;/b&gt;&lt;br/&gt;Dev proxy:  /api  →  localhost:3000"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#388e3c;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="frontend">
+      <mxGeometry x="418" y="728" width="240" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="env_note" value="&lt;b&gt;environments/&lt;/b&gt;&lt;br/&gt;environment.ts (dev)  •  environment.prod.ts&lt;br/&gt;{ apiUrl, streamApiKey }"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#388e3c;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="frontend">
+      <mxGeometry x="676" y="728" width="280" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         LAYER 3 — BACKEND (Node.js + Express + TypeScript)
+    ══════════════════════════════════════════════════════════════════ -->
+    <mxCell id="backend" value="🖥  BACKEND  —  Node.js 20  +  Express 4  +  TypeScript  (REST API Server)"
+      style="swimlane;startSize=36;fillColor=#fff3e0;strokeColor=#e65100;fontStyle=1;fontSize=14;fontColor=#5c3200;arcSize=2;"
+      vertex="1" parent="1">
+      <mxGeometry x="20" y="1143" width="2200" height="395" as="geometry" />
+    </mxCell>
+
+    <mxCell id="index_ts" value="&lt;b&gt;index.ts&lt;/b&gt; — Express App&lt;br/&gt;────────────────────&lt;br/&gt;app.use(helmet())&lt;br/&gt;app.use(cors({&lt;br/&gt;  origin: FRONTEND_URL&lt;br/&gt;}))&lt;br/&gt;app.use(morgan('combined'))&lt;br/&gt;app.use(express.json())&lt;br/&gt;────────────────────&lt;br/&gt;GET  /health&lt;br/&gt;/api/auth    → authRouter&lt;br/&gt;/api/channels → channelRouter&lt;br/&gt;/api/meetings → meetingRouter&lt;br/&gt;────────────────────&lt;br/&gt;app.use(errorMiddleware)&lt;br/&gt;app.listen(PORT)"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#e65100;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="backend">
+      <mxGeometry x="30" y="52" width="296" height="300" as="geometry" />
+    </mxCell>
+
+    <mxCell id="auth_route" value="&lt;b&gt;auth.route.ts&lt;/b&gt;&lt;br/&gt;────────────────────&lt;br/&gt;&lt;b&gt;POST /api/auth/token&lt;/b&gt;&lt;br/&gt;body: { userId, userName, userImage? }&lt;br/&gt;→ serverClient.upsertUser({ id, name, image })&lt;br/&gt;→ serverClient.createToken(userId, exp+24h)&lt;br/&gt;← { token, userId, userName, apiKey }&lt;br/&gt;────────────────────&lt;br/&gt;&lt;b&gt;POST /api/auth/guest&lt;/b&gt;&lt;br/&gt;→ auto-gen guest_XXXXXXXX&lt;br/&gt;→ upsertUser + createToken (24h)&lt;br/&gt;← { token, userId, userName }"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8ee;strokeColor=#e65100;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="backend">
+      <mxGeometry x="346" y="52" width="444" height="255" as="geometry" />
+    </mxCell>
+
+    <mxCell id="ch_route" value="&lt;b&gt;channel.route.ts&lt;/b&gt;&lt;br/&gt;────────────────────&lt;br/&gt;&lt;b&gt;POST /api/channels&lt;/b&gt;&lt;br/&gt;body: { name, createdById, members[], desc }&lt;br/&gt;→ channelId = uuid().replace(/-/g,'').slice(0,24)&lt;br/&gt;→ allMembers = [createdById, ...members]&lt;br/&gt;→ serverClient.channel('messaging', id, {&lt;br/&gt;    name, description, created_by_id, members&lt;br/&gt;  })&lt;br/&gt;→ channel.create()&lt;br/&gt;← 201 { channelId, name, members }"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8ee;strokeColor=#e65100;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="backend">
+      <mxGeometry x="808" y="52" width="440" height="255" as="geometry" />
+    </mxCell>
+
+    <mxCell id="mt_route" value="&lt;b&gt;meeting.route.ts&lt;/b&gt;&lt;br/&gt;────────────────────&lt;br/&gt;&lt;b&gt;POST /api/meetings&lt;/b&gt;&lt;br/&gt;body: { createdById, callId?, title? }&lt;br/&gt;→ meetingCallId = callId ?? uuid()&lt;br/&gt;← 201 { callId, callType, joinUrl }&lt;br/&gt;────────────────────&lt;br/&gt;&lt;b&gt;GET /api/meetings/:callId&lt;/b&gt;&lt;br/&gt;← { callId, callType, joinUrl }&lt;br/&gt;&lt;font color=&quot;#888888&quot;&gt;(no server-side state)&lt;/font&gt;"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8ee;strokeColor=#e65100;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="backend">
+      <mxGeometry x="1266" y="52" width="420" height="255" as="geometry" />
+    </mxCell>
+
+    <mxCell id="config_ts" value="&lt;b&gt;config.ts&lt;/b&gt;&lt;br/&gt;────────────&lt;br/&gt;PORT&lt;br/&gt;FRONTEND_URL&lt;br/&gt;STREAM_API_KEY&lt;br/&gt;STREAM_API_SECRET&lt;br/&gt;(reads from .env)"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8ee;strokeColor=#e65100;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="backend">
+      <mxGeometry x="1706" y="52" width="220" height="148" as="geometry" />
+    </mxCell>
+
+    <mxCell id="err_mw" value="&lt;b&gt;error.middleware.ts&lt;/b&gt;&lt;br/&gt;Global 4-arg error handler&lt;br/&gt;→ JSON { error: { message } }&lt;br/&gt;HTTP 500 default"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8ee;strokeColor=#e65100;fontSize=10;align=left;spacingLeft=8;arcSize=4;"
+      vertex="1" parent="backend">
+      <mxGeometry x="1706" y="218" width="220" height="88" as="geometry" />
+    </mxCell>
+
+    <mxCell id="node_sdk" value="&lt;b&gt;stream-chat  (Node SDK)&lt;/b&gt;   StreamChat.getInstance(API_KEY, API_SECRET)   •   serverClient.upsertUser()   •   serverClient.createToken(userId, exp)   •   serverClient.channel('messaging', id, data).create()"
+      style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3cd;strokeColor=#e65100;fontSize=10;fontStyle=1;arcSize=4;"
+      vertex="1" parent="backend">
+      <mxGeometry x="346" y="323" width="1360" height="52" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         EDGES / CONNECTIONS
+    ══════════════════════════════════════════════════════════════════ -->
+
+    <!-- AuthService → POST /api/auth/token -->
+    <mxCell id="e1" value="POST /api/auth/token&lt;br/&gt;POST /api/auth/guest"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#005691;strokeColor=#005691;strokeWidth=2;dashed=1;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="auth_svc" target="auth_route">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- StreamChatService → POST /api/channels -->
+    <mxCell id="e2" value="POST /api/channels"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#005691;strokeColor=#005691;strokeWidth=2;dashed=1;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="sc_svc" target="ch_route">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Start meeting → POST /api/meetings -->
+    <mxCell id="e3" value="POST /api/meetings"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#005691;strokeColor=#005691;strokeWidth=2;dashed=1;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="start_meeting" target="mt_route">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- StreamChatService → Stream Chat API (WebSocket + REST) -->
+    <mxCell id="e4" value="stream-chat SDK&lt;br/&gt;WebSocket + REST"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#1565c0;strokeColor=#1565c0;strokeWidth=2.5;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="sc_svc" target="sc_api">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- StreamVideoService → Stream Video API (WebRTC) -->
+    <mxCell id="e5" value="@stream-io/video-client&lt;br/&gt;WebRTC"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#1565c0;strokeColor=#1565c0;strokeWidth=2.5;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="sv_svc" target="sv_api">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- auth.route → Stream Chat API (server SDK) -->
+    <mxCell id="e6" value="upsertUser()&lt;br/&gt;createToken()"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#e65100;strokeColor=#e65100;strokeWidth=2;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="auth_route" target="sc_api">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- channel.route → Stream Chat API (server SDK) -->
+    <mxCell id="e7" value="channel.create()"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#e65100;strokeColor=#e65100;strokeWidth=2;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="ch_route" target="sc_api">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- SDK channel-list ↔ StreamChatService (ChannelService) -->
+    <mxCell id="e8" value="ChannelService (SDK)"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#1976d2;strokeColor=#1976d2;strokeWidth=1.5;dashed=1;endArrow=block;endFill=0;"
+      edge="1" parent="1" source="sdk_ch_list" target="sc_svc">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- MeetingRoomComponent → StreamVideoService -->
+    <mxCell id="e9" value="joinCall() / leaveCall()"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#7b1fa2;strokeColor=#7b1fa2;strokeWidth=1.5;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="meeting_comp" target="sv_svc">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- LoginComponent → AuthService -->
+    <mxCell id="e10" value="login() / loginAsGuest()"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#7b1fa2;strokeColor=#7b1fa2;strokeWidth=1.5;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="login_comp" target="auth_svc">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- AuthService → StreamChatService (connect after login) -->
+    <mxCell id="e11" value="connect()"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#7b1fa2;strokeColor=#7b1fa2;strokeWidth=1.5;endArrow=block;endFill=1;"
+      edge="1" parent="1" source="auth_svc" target="sc_svc">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- auth.interceptor injects JWT into all HTTP calls -->
+    <mxCell id="e12" value="injects Bearer &lt;token&gt;"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#6a1b9a;strokeColor=#6a1b9a;strokeWidth=1.5;dashed=1;endArrow=open;endFill=0;"
+      edge="1" parent="1" source="auth_intcp" target="auth_route">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- authGuard protects /chat -->
+    <mxCell id="e13" value="guards /chat"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#6a1b9a;strokeColor=#6a1b9a;strokeWidth=1;dashed=1;endArrow=open;endFill=0;"
+      edge="1" parent="1" source="auth_guard" target="chat_layout">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- authGuard protects /meeting -->
+    <mxCell id="e14" value="guards /meeting"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#6a1b9a;strokeColor=#6a1b9a;strokeWidth=1;dashed=1;endArrow=open;endFill=0;"
+      edge="1" parent="1" source="auth_guard" target="meeting_comp">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- SDK channel (stream-message-input) uses StreamChatService typing patch -->
+    <mxCell id="e15" value="typingStarted/Stopped (patched)"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#1976d2;strokeColor=#1976d2;strokeWidth=1.5;dashed=1;endArrow=block;endFill=0;"
+      edge="1" parent="1" source="sdk_channel" target="sc_svc">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- SDK → Stream Chat API (realtime WebSocket) -->
+    <mxCell id="e16" value="WebSocket realtime events"
+      style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;fontSize=10;fontColor=#1565c0;strokeColor=#1565c0;strokeWidth=1.5;dashed=1;endArrow=open;endFill=0;"
+      edge="1" parent="1" source="sdk_ch_list" target="sc_api">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>

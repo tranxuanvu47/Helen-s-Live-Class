@@ -1,0 +1,31 @@
+<div class="video-tile" [class.video-tile--local]="isLocal" [class.video-tile--no-video]="!hasVideo">
+  <!-- Video element -->
+  <video
+    #videoEl
+    class="video-tile__video"
+    [class.video-tile__video--mirrored]="isLocal && mirrored"
+    [muted]="isLocal"
+    autoplay
+    playsinline
+  ></video>
+
+  <!-- Audio element (remote only) -->
+  @if (!isLocal) {
+    <audio #audioEl autoplay playsinline style="display:none"></audio>
+  }
+
+  <!-- Avatar fallback when no video -->
+  @if (!hasVideo) {
+    <div class="video-tile__avatar">
+      <span>{{ initials }}</span>
+    </div>
+  }
+
+  <!-- Name badge -->
+  <div class="video-tile__badge">
+    @if (isLocal) {
+      <span class="video-tile__you">You</span>
+    }
+    <span class="video-tile__name">{{ displayName }}</span>
+  </div>
+</div>

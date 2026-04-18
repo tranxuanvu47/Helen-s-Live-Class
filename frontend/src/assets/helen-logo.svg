@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 120 40" fill="none">
+  <!-- Helen logo icon - chat bubble with H letter -->
+  <rect x="2" y="4" width="32" height="32" rx="8" fill="#FFB74D" opacity="0.2"/>
+  <path d="M8 10h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H12l-4 4V14a2 2 0 0 1 2-2z" fill="#FF9F43" stroke="#FF9F43" stroke-width="1.5" stroke-linejoin="round"/>
+  <text x="18" y="24" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">H</text>
+  <!-- Helen text -->
+  <text x="44" y="27" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#FF9F43">Helen</text>
+</svg>

@@ -1,0 +1,174 @@
+<div class="ecm-backdrop" (click)="onBackdropClick($event)">
+  <div class="ecm" role="dialog" aria-labelledby="ecm-title" aria-modal="true">
+
+    <!-- Header -->
+    <div class="ecm__header">
+      <div class="ecm__header-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+      </div>
+      <h2 id="ecm-title" class="ecm__title">Edit Channel</h2>
+      <button class="ecm__close" (click)="close()" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="ecm__body">
+
+      <!-- ── Section: Channel Name ────────────────────────────────────────── -->
+      <section class="ecm__section">
+        <h3 class="ecm__section-title">Channel Name</h3>
+        <div class="ecm__name-row">
+          <input
+            class="ecm__input"
+            [class.ecm__input--error]="nameError()"
+            type="text"
+            placeholder="Channel name"
+            [(ngModel)]="channelName"
+            (keydown.enter)="saveName()"
+            maxlength="60"
+            aria-label="Channel name"
+          />
+          <button
+            class="ecm__save-btn"
+            [class.ecm__save-btn--saved]="nameSaved()"
+            [disabled]="isSavingName() || !channelName.trim()"
+            (click)="saveName()"
+          >
+            @if (isSavingName()) {
+              <span class="ecm__spinner"></span>
+            } @else if (nameSaved()) {
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Saved
+            } @else {
+              Save
+            }
+          </button>
+        </div>
+        @if (nameError()) {
+          <span class="ecm__field-error">{{ nameError() }}</span>
+        }
+      </section>
+
+      <div class="ecm__divider"></div>
+
+      <!-- ── Section: Members ────────────────────────────────────────────── -->
+      <section class="ecm__section">
+        <h3 class="ecm__section-title">
+          Members
+          <span class="ecm__section-count">{{ members().length }}</span>
+        </h3>
+
+        <ul class="ecm__member-list" aria-label="Channel members">
+          @for (member of members(); track member.userId) {
+            <li class="ecm__member">
+              <div class="ecm__avatar">
+                @if (member.image) {
+                  <img [src]="member.image" [alt]="member.name" />
+                } @else {
+                  {{ getInitials(member.name) }}
+                }
+              </div>
+              <div class="ecm__member-info">
+                <span class="ecm__member-name">{{ member.name }}</span>
+                @if (member.userId === currentUserId) {
+                  <span class="ecm__member-tag">you</span>
+                }
+              </div>
+              @if (member.userId !== currentUserId) {
+                <button
+                  class="ecm__remove-btn"
+                  [disabled]="removingId() === member.userId"
+                  (click)="removeMember(member.userId)"
+                  [attr.aria-label]="'Remove ' + member.name"
+                >
+                  @if (removingId() === member.userId) {
+                    <span class="ecm__spinner ecm__spinner--sm"></span>
+                  } @else {
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  }
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+
+      <div class="ecm__divider"></div>
+
+      <!-- ── Section: Add Members ────────────────────────────────────────── -->
+      <section class="ecm__section">
+        <h3 class="ecm__section-title">Add Member</h3>
+
+        <div class="ecm__search-row">
+          <div class="ecm__search-wrap">
+            <svg class="ecm__search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              class="ecm__input ecm__input--search"
+              type="text"
+              placeholder="Search by name or ID…"
+              [(ngModel)]="searchQuery"
+              (ngModelChange)="onSearchInput()"
+              aria-label="Search users"
+            />
+            @if (isSearching()) {
+              <span class="ecm__spinner ecm__spinner--inline"></span>
+            }
+          </div>
+        </div>
+
+        @if (searchError() && !isSearching()) {
+          <p class="ecm__search-hint">{{ searchError() }}</p>
+        }
+
+        @if (searchResults().length > 0) {
+          <ul class="ecm__search-results" aria-label="Search results">
+            @for (user of searchResults(); track user.id) {
+              <li class="ecm__search-item">
+                <div class="ecm__avatar ecm__avatar--sm">
+                  @if (user.image) {
+                    <img [src]="user.image" [alt]="user.name" />
+                  } @else {
+                    {{ getInitials(user.name) }}
+                  }
+                </div>
+                <div class="ecm__member-info">
+                  <span class="ecm__member-name">{{ user.name }}</span>
+                  @if (user.name !== user.id) {
+                    <span class="ecm__member-id">{{ user.id }}</span>
+                  }
+                </div>
+                <button
+                  class="ecm__add-btn"
+                  [disabled]="addingId() === user.id"
+                  (click)="addMember(user)"
+                  [attr.aria-label]="'Add ' + user.name"
+                >
+                  @if (addingId() === user.id) {
+                    <span class="ecm__spinner ecm__spinner--sm"></span>
+                  } @else {
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Add
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+    </div>
+  </div>
+</div>

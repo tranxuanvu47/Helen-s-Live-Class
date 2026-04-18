@@ -1,0 +1,337 @@
+:host {
+  display: block;
+}
+
+.app-header {
+  display: flex;
+  align-items: stretch;
+  height: 52px;
+  padding: 0 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 0;
+  flex-shrink: 0;
+
+  @media (max-width: 576px) {
+    padding: 0 12px;
+    height: 48px;
+    gap: 4px;
+  }
+
+  // ── Hamburger menu (mobile) ─────────────────────────────────────────────────
+  &__hamburger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #4d4d4d;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-right: 4px;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: #f0f0f0;
+      color: #005691;
+    }
+
+    &--active {
+      color: #005691;
+      background: rgba(0, 86, 145, 0.08);
+    }
+
+    @media (max-width: 767px) {
+      display: flex;
+    }
+  }
+
+  // ── Brand ─────────────────────────────────────────────────────────────────
+  &__brand {
+    display: flex;
+    align-items: center;
+    padding-right: 28px;
+    padding-left: 0;
+    flex-shrink: 0;
+    background: transparent;
+    margin-right: 0;
+
+    @media (max-width: 576px) {
+      padding-right: 12px;
+    }
+  }
+
+  &__logo {
+    display: block;
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+
+    @media (max-width: 576px) {
+      height: 32px;
+    }
+  }
+
+  &__bosch-emblem  { display: none; }
+  &__bosch-wordmark { display: none; }
+  &__bosch-logo { display: none; }
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  &__nav {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  &__nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #4d4d4d;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    position: relative;
+
+    &:hover {
+      color: #005691;
+    }
+
+    &--active {
+      color: #005691;
+      font-weight: 600;
+      border-bottom-color: #005691;
+    }
+  }
+
+  // ── Spacer ────────────────────────────────────────────────────────────────
+  &__spacer {
+    flex: 1;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  // ── Right side ────────────────────────────────────────────────────────────
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: default;
+    transition: background 0.15s;
+
+    @media (max-width: 576px) {
+      padding: 6px;
+    }
+
+    &:hover {
+      background: #f4f4f4;
+    }
+  }
+
+  &__avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #005691;
+    flex-shrink: 0;
+
+    @media (max-width: 576px) {
+      width: 32px;
+      height: 32px;
+    }
+
+    &--initials {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+  }
+
+  &__user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    line-height: 1;
+  }
+
+  &__user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1a;
+
+    @media (max-width: 576px) {
+      font-size: 14px;
+    }
+  }
+
+  &__user-role {
+    font-size: 11px;
+    color: #8a8a8a;
+
+    @media (max-width: 576px) {
+      display: none;
+    }
+  }
+
+  // ── Meeting Menu ──────────────────────────────────────────────────────────
+  &__meeting-wrapper {
+    position: relative;
+    display: none;
+    align-items: center;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      display: flex;
+    }
+  }
+
+  &__meeting-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #4d4d4d;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: #f0f0f0;
+      color: #005691;
+    }
+
+    &--active {
+      background: rgba(0, 86, 145, 0.08);
+      color: #005691;
+    }
+
+    @media (max-width: 576px) {
+      padding: 0 8px;
+      width: 44px;
+      justify-content: center;
+    }
+  }
+
+  &__meeting-btn-label {
+    @media (max-width: 576px) {
+      display: none;
+    }
+  }
+
+  &__chevron {
+    transition: transform 0.15s;
+
+    @media (max-width: 576px) {
+      display: none;
+    }
+  }
+
+  &__meeting-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    min-width: 180px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+    overflow: hidden;
+    padding: 4px;
+
+    @media (max-width: 576px) {
+      right: -4px;
+      min-width: 200px;
+    }
+  }
+
+  &__meeting-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #1a1a1a;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    white-space: nowrap;
+
+    &:hover {
+      background: #f0f4f8;
+      color: #005691;
+    }
+
+    svg {
+      flex-shrink: 0;
+      color: #005691;
+    }
+  }
+
+  // ── Icon buttons ──────────────────────────────────────────────────────────
+  &__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: #8a8a8a;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+
+    @media (max-width: 576px) {
+      width: 36px;
+      height: 36px;
+    }
+
+    &:hover {
+      background: #f0f0f0;
+      color: #1a1a1a;
+    }
+
+    &--logout:hover {
+      background: rgba(224, 0, 27, 0.07);
+      color: #e0001b;
+    }
+  }
+}

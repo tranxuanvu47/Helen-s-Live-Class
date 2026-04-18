@@ -1,0 +1,470 @@
+<mxGraphModel dx="1422" dy="762" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="1">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ══════════════ TITLE ══════════════ -->
+    <mxCell id="title" value="Stream Chat — Architecture Flow"
+      style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;fontColor=#1a1a1a;"
+      vertex="1" parent="1">
+      <mxGeometry x="377" y="30" width="900" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         COLUMN 1 — BROWSER / USER
+    ══════════════════════════════════════════════════ -->
+    <mxCell id="user_box" value=""
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#d0d0d0;arcSize=3;"
+      vertex="1" parent="1">
+      <mxGeometry x="40" y="90" width="220" height="980" as="geometry" />
+    </mxCell>
+    <mxCell id="user_label" value="👤  User / Browser"
+      style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#4d4d4d;"
+      vertex="1" parent="1">
+      <mxGeometry x="40" y="96" width="220" height="32" as="geometry" />
+    </mxCell>
+
+    <!-- User actions -->
+    <mxCell id="u_login" value="Login / Guest"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#fffde7;strokeColor=#f9a825;fontSize=12;fontStyle=1;"
+      vertex="1" parent="1">
+      <mxGeometry x="65" y="150" width="170" height="44" as="geometry" />
+    </mxCell>
+    <mxCell id="u_chat" value="Send Message"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#43a047;fontSize=12;fontStyle=1;"
+      vertex="1" parent="1">
+      <mxGeometry x="65" y="390" width="170" height="44" as="geometry" />
+    </mxCell>
+    <mxCell id="u_typing" value="Typing..."
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#43a047;fontSize=12;fontStyle=1;"
+      vertex="1" parent="1">
+      <mxGeometry x="65" y="580" width="170" height="44" as="geometry" />
+    </mxCell>
+    <mxCell id="u_channel" value="Create Channel"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#43a047;fontSize=12;fontStyle=1;"
+      vertex="1" parent="1">
+      <mxGeometry x="65" y="740" width="170" height="44" as="geometry" />
+    </mxCell>
+    <mxCell id="u_meeting" value="Start Meeting"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontSize=12;fontStyle=1;"
+      vertex="1" parent="1">
+      <mxGeometry x="65" y="920" width="170" height="44" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         COLUMN 2 — FRONTEND (Angular 17)
+    ══════════════════════════════════════════════════ -->
+    <mxCell id="fe_box" value=""
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;arcSize=3;"
+      vertex="1" parent="1">
+      <mxGeometry x="310" y="90" width="320" height="980" as="geometry" />
+    </mxCell>
+    <mxCell id="fe_label" value="🅰  Frontend  —  Angular 17"
+      style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#1a3c1a;"
+      vertex="1" parent="1">
+      <mxGeometry x="310" y="96" width="320" height="32" as="geometry" />
+    </mxCell>
+
+    <!-- Tech stack chips -->
+    <mxCell id="fe_tech" value="stream-chat-angular  •  @stream-io/video-client  •  RxJS  •  Angular Signals"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#82b366;fontSize=10;fontColor=#33691e;"
+      vertex="1" parent="1">
+      <mxGeometry x="325" y="132" width="290" height="30" as="geometry" />
+    </mxCell>
+
+    <!-- FE components for each flow -->
+    <mxCell id="fe_login" value="LoginComponent&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;AuthService.login() / loginAsGuest()&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#43a047;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="330" y="145" width="280" height="52" as="geometry" />
+    </mxCell>
+
+    <mxCell id="fe_connect" value="StreamChatService.connect()&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;ChatClientService.init(apiKey, user, token)&lt;br/&gt;ChannelService.init(filter, sort)&lt;br/&gt;patchTypingThrottle()&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#43a047;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="330" y="230" width="280" height="72" as="geometry" />
+    </mxCell>
+
+    <mxCell id="fe_msg" value="&lt;stream-message-input /&gt; (SDK)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;ChannelService.sendMessage(text)&lt;br/&gt;→ channel.sendMessage()&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontSize=11;dashed=1;strokeWidth=2;"
+      vertex="1" parent="1">
+      <mxGeometry x="330" y="378" width="280" height="62" as="geometry" />
+    </mxCell>
+
+    <mxCell id="fe_recv" value="&lt;stream-message-list /&gt; (SDK)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;WebSocket push → state update&lt;br/&gt;→ re-render message list&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontSize=11;dashed=1;strokeWidth=2;"
+      vertex="1" parent="1">
+      <mxGeometry x="330" y="460" width="280" height="62" as="geometry" />
+    </mxCell>
+
+    <mxCell id="fe_typing" value="StreamChatService (patched)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;typingStarted() ← throttle 3 000 ms&lt;br/&gt;typingStopped() ← debounce 1 000 ms&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="330" y="568" width="280" height="62" as="geometry" />
+    </mxCell>
+
+    <mxCell id="fe_ch" value="CreateChannelModal&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;StreamChatService.createChannel()&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#43a047;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="330" y="728" width="280" height="52" as="geometry" />
+    </mxCell>
+
+    <mxCell id="fe_meet" value="MeetingRoomComponent&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;StreamVideoService.connectClient()&lt;br/&gt;StreamVideoService.joinCall(callId)&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#c62828;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="330" y="908" width="280" height="62" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         COLUMN 3 — BACKEND (Express)
+    ══════════════════════════════════════════════════ -->
+    <mxCell id="be_box" value=""
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;arcSize=3;"
+      vertex="1" parent="1">
+      <mxGeometry x="690" y="90" width="320" height="980" as="geometry" />
+    </mxCell>
+    <mxCell id="be_label" value="🖥  Backend  —  Node.js + Express"
+      style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#5c3200;"
+      vertex="1" parent="1">
+      <mxGeometry x="690" y="96" width="320" height="32" as="geometry" />
+    </mxCell>
+
+    <mxCell id="be_tech" value="Express 4  •  TypeScript  •  express-validator  •  uuid  •  helmet  •  morgan"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#fff8ee;strokeColor=#e65100;fontSize=10;fontColor=#5c3200;"
+      vertex="1" parent="1">
+      <mxGeometry x="705" y="132" width="290" height="30" as="geometry" />
+    </mxCell>
+
+    <mxCell id="be_auth_token" value="POST /api/auth/token&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;validate body → upsertUser()&lt;br/&gt;→ createToken(24h JWT)&lt;br/&gt;← { token, userId, apiKey }&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#e65100;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="710" y="145" width="280" height="72" as="geometry" />
+    </mxCell>
+
+    <mxCell id="be_auth_guest" value="POST /api/auth/guest&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;auto-gen guest_XXXXXXXX&lt;br/&gt;→ upsertUser() + createToken()&lt;br/&gt;← { token, userId, userName }&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#e65100;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="710" y="232" width="280" height="68" as="geometry" />
+    </mxCell>
+
+    <!-- be: no role in send message (direct SDK) — shown as bypass -->
+    <mxCell id="be_bypass" value="(không qua Backend)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;SDK gọi thẳng Stream API&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bdbdbd;fontSize=11;fontColor=#9e9e9e;dashed=1;"
+      vertex="1" parent="1">
+      <mxGeometry x="710" y="390" width="280" height="44" as="geometry" />
+    </mxCell>
+
+    <mxCell id="be_bypass2" value="(không qua Backend)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;SDK gọi thẳng Stream API&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bdbdbd;fontSize=11;fontColor=#9e9e9e;dashed=1;"
+      vertex="1" parent="1">
+      <mxGeometry x="710" y="580" width="280" height="44" as="geometry" />
+    </mxCell>
+
+    <mxCell id="be_channel" value="POST /api/channels&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;validate → gen channelId (uuid)&lt;br/&gt;→ serverClient.channel().create()&lt;br/&gt;← 201 { channelId, name, members }&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#e65100;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="710" y="728" width="280" height="72" as="geometry" />
+    </mxCell>
+
+    <mxCell id="be_meeting" value="POST /api/meetings&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;gen meetingCallId (uuid)&lt;br/&gt;← { callId, callType, joinUrl }&lt;br/&gt;&lt;i&gt;(no server-side call state)&lt;/i&gt;&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#e65100;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="710" y="908" width="280" height="72" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         COLUMN 4 — STREAM CLOUD
+    ══════════════════════════════════════════════════ -->
+    <mxCell id="sc_box" value=""
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;arcSize=3;"
+      vertex="1" parent="1">
+      <mxGeometry x="1070" y="90" width="320" height="980" as="geometry" />
+    </mxCell>
+    <mxCell id="sc_label" value="☁  Stream Cloud"
+      style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#003366;"
+      vertex="1" parent="1">
+      <mxGeometry x="1070" y="96" width="320" height="32" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sc_tech" value="Stream Chat API  •  Stream Video API  •  WebSocket  •  WebRTC SFU"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#e8f4fc;strokeColor=#6c8ebf;fontSize=10;fontColor=#003366;"
+      vertex="1" parent="1">
+      <mxGeometry x="1085" y="132" width="290" height="30" as="geometry" />
+    </mxCell>
+
+    <!-- Stream: token validation -->
+    <mxCell id="sc_upsert" value="upsertUser()&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;Tạo / cập nhật user trong Stream&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="1090" y="145" width="280" height="52" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sc_token" value="createToken() → JWT (24h)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;Client dùng token này kết nối WS&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="1090" y="212" width="280" height="52" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sc_ws_connect" value="WebSocket Connect&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;Xác thực JWT → duy trì kết nối realtime&lt;br/&gt;Trả về channel list state&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="1090" y="280" width="280" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Stream: message flow -->
+    <mxCell id="sc_msg" value="POST /message (REST)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;Lưu message vào database&lt;br/&gt;Push qua WebSocket đến tất cả members&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="1090" y="378" width="280" height="62" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sc_ws_push" value="WebSocket Push (realtime)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;event: message.new&lt;br/&gt;→ tất cả members trong channel&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="1090" y="460" width="280" height="52" as="geometry" />
+    </mxCell>
+
+    <!-- Stream: typing event -->
+    <mxCell id="sc_typing" value="POST /event  (typing.start / typing.stop)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;⚠ Rate limit 429 nếu gọi quá nhiều&lt;br/&gt;✓ Fix: throttle 3s + debounce 1s&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="1090" y="568" width="280" height="62" as="geometry" />
+    </mxCell>
+
+    <!-- Stream: channel create -->
+    <mxCell id="sc_ch_create" value="channel.create() (Server SDK)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;Tạo channel type: messaging&lt;br/&gt;Gán members, permissions&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="1090" y="728" width="280" height="62" as="geometry" />
+    </mxCell>
+
+    <!-- Stream: video -->
+    <mxCell id="sc_video" value="Stream Video API (WebRTC)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;SFU: nhận media → relay đến peers&lt;br/&gt;ICE/SDP signaling&lt;br/&gt;Video tile × N participants&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#c62828;fontSize=11;"
+      vertex="1" parent="1">
+      <mxGeometry x="1090" y="908" width="280" height="72" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         FLOW LABELS (vertical sections)
+    ══════════════════════════════════════════════════ -->
+    <mxCell id="flow1_label" value="① AUTH FLOW"
+      style="text;html=1;strokeColor=#f9a825;fillColor=#fffde7;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=2;fontSize=11;fontStyle=1;fontColor=#f57f17;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="162" width="160" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="flow2_label" value="② CONNECT SDK"
+      style="text;html=1;strokeColor=#1976d2;fillColor=#e3f2fd;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=2;fontSize=11;fontStyle=1;fontColor=#0d47a1;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="262" width="160" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="flow3_label" value="③ SEND MESSAGE"
+      style="text;html=1;strokeColor=#43a047;fillColor=#e8f5e9;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=2;fontSize=11;fontStyle=1;fontColor=#1b5e20;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="390" width="160" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="flow4_label" value="④ REALTIME RECV"
+      style="text;html=1;strokeColor=#1976d2;fillColor=#e3f2fd;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=2;fontSize=11;fontStyle=1;fontColor=#0d47a1;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="468" width="160" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="flow5_label" value="⑤ TYPING EVENT"
+      style="text;html=1;strokeColor=#e65100;fillColor=#fff3e0;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=2;fontSize=11;fontStyle=1;fontColor=#bf360c;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="580" width="160" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="flow6_label" value="⑥ CREATE CHANNEL"
+      style="text;html=1;strokeColor=#43a047;fillColor=#e8f5e9;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=2;fontSize=11;fontStyle=1;fontColor=#1b5e20;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="740" width="160" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="flow7_label" value="⑦ VIDEO MEETING"
+      style="text;html=1;strokeColor=#c62828;fillColor=#fce4ec;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=2;fontSize=11;fontStyle=1;fontColor=#b71c1c;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="920" width="160" height="36" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         HORIZONTAL DIVIDERS
+    ══════════════════════════════════════════════════ -->
+    <mxCell id="div1" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#cccccc;strokeWidth=1;" edge="1" parent="1">
+      <mxGeometry x="40" y="360" width="10" height="10" as="geometry">
+        <Array as="points" />
+        <mxPoint x="40" y="360" as="sourcePoint" />
+        <mxPoint x="1610" y="360" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="div2" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#cccccc;strokeWidth=1;" edge="1" parent="1">
+      <mxGeometry x="40" y="555" width="10" height="10" as="geometry">
+        <Array as="points" />
+        <mxPoint x="40" y="555" as="sourcePoint" />
+        <mxPoint x="1610" y="555" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="div3" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#cccccc;strokeWidth=1;" edge="1" parent="1">
+      <mxGeometry x="40" y="710" width="10" height="10" as="geometry">
+        <Array as="points" />
+        <mxPoint x="40" y="710" as="sourcePoint" />
+        <mxPoint x="1610" y="710" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="div4" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#cccccc;strokeWidth=1;" edge="1" parent="1">
+      <mxGeometry x="40" y="890" width="10" height="10" as="geometry">
+        <Array as="points" />
+        <mxPoint x="40" y="890" as="sourcePoint" />
+        <mxPoint x="1610" y="890" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         ARROWS — FLOW 1: AUTH
+    ══════════════════════════════════════════════════ -->
+    <!-- User → FE login -->
+    <mxCell id="a1" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#f9a825;strokeWidth=2;rounded=0;" edge="1" parent="1" source="u_login" target="fe_login">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <!-- FE → BE token -->
+    <mxCell id="a2" value="POST /api/auth/token" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#005691;strokeWidth=2;rounded=0;fontSize=10;fontColor=#005691;" edge="1" parent="1" source="fe_login" target="be_auth_token">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <!-- BE → Stream upsertUser -->
+    <mxCell id="a3" value="upsertUser()" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#e65100;strokeWidth=2;rounded=0;fontSize=10;fontColor=#e65100;" edge="1" parent="1" source="be_auth_token" target="sc_upsert">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <!-- BE → Stream createToken -->
+    <mxCell id="a4" value="createToken()" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#e65100;strokeWidth=2;rounded=0;fontSize=10;fontColor=#e65100;" edge="1" parent="1" source="be_auth_guest" target="sc_token">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <!-- BE → FE: return token -->
+    <mxCell id="a5" value="← { token, apiKey }" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#005691;strokeWidth=2;rounded=0;fontSize=10;fontColor=#005691;" edge="1" parent="1" source="be_auth_token" target="fe_connect">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         ARROWS — FLOW 2: CONNECT SDK
+    ══════════════════════════════════════════════════ -->
+    <!-- FE connect → Stream WS -->
+    <mxCell id="a6" value="WebSocket connect (token)" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#1565c0;strokeWidth=2.5;rounded=0;fontSize=10;fontColor=#1565c0;" edge="1" parent="1" source="fe_connect" target="sc_ws_connect">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         ARROWS — FLOW 3: SEND MESSAGE
+    ══════════════════════════════════════════════════ -->
+    <!-- User → FE -->
+    <mxCell id="a7" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#43a047;strokeWidth=2;rounded=0;" edge="1" parent="1" source="u_chat" target="fe_msg">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <!-- FE → Stream (bypass BE) -->
+    <mxCell id="a8" value="POST /message (SDK)" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#1565c0;strokeWidth=2.5;rounded=0;fontSize=10;fontColor=#1565c0;" edge="1" parent="1" source="fe_msg" target="sc_msg">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <!-- Stream WS push → FE -->
+    <mxCell id="a9" value="event: message.new" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#1565c0;strokeWidth=2.5;rounded=0;fontSize=10;fontColor=#1565c0;" edge="1" parent="1" source="sc_ws_push" target="fe_recv">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         ARROWS — FLOW 5: TYPING
+    ══════════════════════════════════════════════════ -->
+    <!-- User → FE -->
+    <mxCell id="a10" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#e65100;strokeWidth=2;rounded=0;" edge="1" parent="1" source="u_typing" target="fe_typing">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <!-- FE → Stream event (throttled) -->
+    <mxCell id="a11" value="POST /event (throttled)" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#e65100;strokeWidth=2;rounded=0;fontSize=10;fontColor=#e65100;" edge="1" parent="1" source="fe_typing" target="sc_typing">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         ARROWS — FLOW 6: CREATE CHANNEL
+    ══════════════════════════════════════════════════ -->
+    <mxCell id="a12" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#43a047;strokeWidth=2;rounded=0;" edge="1" parent="1" source="u_channel" target="fe_ch">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a13" value="POST /api/channels" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#005691;strokeWidth=2;rounded=0;fontSize=10;fontColor=#005691;" edge="1" parent="1" source="fe_ch" target="be_channel">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a14" value="channel.create()" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#e65100;strokeWidth=2;rounded=0;fontSize=10;fontColor=#e65100;" edge="1" parent="1" source="be_channel" target="sc_ch_create">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         ARROWS — FLOW 7: VIDEO MEETING
+    ══════════════════════════════════════════════════ -->
+    <mxCell id="a15" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#c62828;strokeWidth=2;rounded=0;" edge="1" parent="1" source="u_meeting" target="fe_meet">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a16" value="POST /api/meetings → callId" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#005691;strokeWidth=2;rounded=0;fontSize=10;fontColor=#005691;" edge="1" parent="1" source="fe_meet" target="be_meeting">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a17" value="call.join() WebRTC" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;strokeColor=#c62828;strokeWidth=2.5;rounded=0;fontSize=10;fontColor=#c62828;" edge="1" parent="1" source="fe_meet" target="sc_video">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════
+         LEGEND
+    ══════════════════════════════════════════════════ -->
+    <mxCell id="legend_box" value="" style="rounded=2;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#e0e0e0;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1430" y="480" width="190" height="390" as="geometry" />
+    </mxCell>
+    <mxCell id="legend_title" value="LEGEND"
+      style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontStyle=1;fontColor=#4d4d4d;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="488" width="190" height="24" as="geometry" />
+    </mxCell>
+
+    <mxCell id="leg1" value="" style="endArrow=block;endFill=1;strokeColor=#005691;strokeWidth=2;html=1;" edge="1" parent="1">
+      <mxGeometry x="1445" y="526" width="10" height="10" as="geometry">
+        <mxPoint x="1445" y="526" as="sourcePoint" />
+        <mxPoint x="1510" y="526" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg1_t" value="HTTP REST (FE → BE)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1518" y="516" width="90" height="20" as="geometry" />
+    </mxCell>
+
+    <mxCell id="leg2" value="" style="endArrow=block;endFill=1;strokeColor=#1565c0;strokeWidth=2.5;html=1;" edge="1" parent="1">
+      <mxGeometry x="1445" y="556" width="10" height="10" as="geometry">
+        <mxPoint x="1445" y="556" as="sourcePoint" />
+        <mxPoint x="1510" y="556" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg2_t" value="Stream SDK (FE → Cloud)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1518" y="546" width="90" height="20" as="geometry" />
+    </mxCell>
+
+    <mxCell id="leg3" value="" style="endArrow=block;endFill=1;strokeColor=#e65100;strokeWidth=2;html=1;" edge="1" parent="1">
+      <mxGeometry x="1445" y="586" width="10" height="10" as="geometry">
+        <mxPoint x="1445" y="586" as="sourcePoint" />
+        <mxPoint x="1510" y="586" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg3_t" value="Server SDK (BE → Cloud)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1518" y="576" width="90" height="20" as="geometry" />
+    </mxCell>
+
+    <mxCell id="leg4" value="" style="endArrow=block;endFill=1;strokeColor=#c62828;strokeWidth=2.5;html=1;" edge="1" parent="1">
+      <mxGeometry x="1445" y="616" width="10" height="10" as="geometry">
+        <mxPoint x="1445" y="616" as="sourcePoint" />
+        <mxPoint x="1510" y="616" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg4_t" value="WebRTC (Video)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1518" y="606" width="90" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- SDK note -->
+    <mxCell id="sdk_note" value="📦  SDK Components (dashed border)&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;= stream-chat-angular library,&lt;br/&gt;không phải code của app&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontSize=10;dashed=1;strokeWidth=2;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="646" width="190" height="68" as="geometry" />
+    </mxCell>
+    <mxCell id="bypass_note" value="⬜  Không qua Backend&lt;br/&gt;&lt;font size=&quot;2&quot;&gt;= FE gọi thẳng Stream API&lt;br/&gt;qua SDK (sendMessage, event)&lt;/font&gt;"
+      style="rounded=2;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bdbdbd;fontSize=10;dashed=1;"
+      vertex="1" parent="1">
+      <mxGeometry x="1430" y="728" width="190" height="68" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>

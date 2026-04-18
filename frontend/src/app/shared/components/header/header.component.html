@@ -1,0 +1,106 @@
+<header class="app-header">
+  <!-- Mobile hamburger -->
+  <button
+    class="app-header__hamburger show-mobile-only"
+    (click)="toggleSidebar.emit()"
+    [class.app-header__hamburger--active]="isSidebarOpen"
+    title="Toggle sidebar"
+    aria-label="Toggle sidebar"
+  >
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      @if (isSidebarOpen) {
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      } @else {
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      }
+    </svg>
+  </button>
+
+  <!-- Brand -->
+  <div class="app-header__brand">
+    <img src="assets/helen-logo.svg" alt="Helen" class="app-header__logo" />
+  </div>
+
+  <!-- Navigation -->
+  <nav class="app-header__nav" aria-label="Main navigation">
+    <a class="app-header__nav-item app-header__nav-item--active" href="#" (click)="$event.preventDefault()">
+      Chats
+    </a>
+    <a class="app-header__nav-item" href="#" (click)="startMeeting.emit(); $event.preventDefault()">
+      Start Meeting
+    </a>
+    <a class="app-header__nav-item" href="#" (click)="joinMeeting.emit(); $event.preventDefault()">
+      Join Meeting
+    </a>
+  </nav>
+
+  <!-- Meeting Menu (always visible, replaces nav on mobile) -->
+  <div class="app-header__meeting-wrapper">
+    <button
+      class="app-header__meeting-btn"
+      (click)="toggleMeetingMenu($event)"
+      title="Meeting"
+      aria-label="Meeting menu"
+      [class.app-header__meeting-btn--active]="showMeetingMenu()"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <polygon points="23 7 16 12 23 17 23 7"/>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+      </svg>
+      <span class="app-header__meeting-btn-label">Meeting</span>
+      <svg class="app-header__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
+
+    @if (showMeetingMenu()) {
+      <div class="app-header__meeting-dropdown" (click)="$event.stopPropagation()">
+        <button class="app-header__meeting-option" (click)="onStartMeeting()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/>
+          </svg>
+          Start Meeting
+        </button>
+        <button class="app-header__meeting-option" (click)="onJoinMeeting()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Join Meeting
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- Spacer -->
+  <div class="app-header__spacer"></div>
+
+  <!-- Right-side icons + user -->
+  <div class="app-header__right">
+    @if (user) {
+      <!-- User avatar (clickable on mobile) -->
+      <div class="app-header__user" role="button" tabindex="0">
+        @if (user.userImage) {
+          <img [src]="user.userImage" [alt]="user.userName" class="app-header__avatar" />
+        } @else {
+          <div class="app-header__avatar app-header__avatar--initials">{{ getInitials() }}</div>
+        }
+        <div class="app-header__user-info hide-mobile">
+          <span class="app-header__user-name">{{ user.userName }}</span>
+          <span class="app-header__user-role">&#64;{{ user.userId }}</span>
+        </div>
+      </div>
+
+      <!-- Sign-out -->
+      <button class="app-header__icon-btn app-header__icon-btn--logout" title="Sign out" (click)="logout()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    }
+  </div>
+</header>

@@ -1,0 +1,75 @@
+<div class="qr-modal-backdrop" (click)="close()">
+  <div class="qr-modal" role="dialog" aria-modal="true" aria-label="QR / Barcode Scanner" (click)="$event.stopPropagation()">
+
+    <div class="qr-modal__header">
+      <div class="qr-modal__icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/>
+          <path d="M14 14h3v3h-3z"/><path d="M17 17h4"/><path d="M17 21v-4"/>
+        </svg>
+      </div>
+      <h2 class="qr-modal__title">Scan QR / Barcode</h2>
+      <button class="qr-modal__close" (click)="close()" title="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Camera view -->
+    <div class="qr-modal__camera-wrap">
+      <video #videoEl class="qr-modal__video" playsinline muted autoplay></video>
+      <canvas #canvasEl class="qr-modal__canvas"></canvas>
+
+      @if (isScanning()) {
+        <div class="qr-modal__viewfinder">
+          <div class="qr-modal__viewfinder-corner qr-modal__viewfinder-corner--tl"></div>
+          <div class="qr-modal__viewfinder-corner qr-modal__viewfinder-corner--tr"></div>
+          <div class="qr-modal__viewfinder-corner qr-modal__viewfinder-corner--bl"></div>
+          <div class="qr-modal__viewfinder-corner qr-modal__viewfinder-corner--br"></div>
+        </div>
+        <p class="qr-modal__hint">Point camera at a QR code or barcode</p>
+      }
+    </div>
+
+    <!-- Error -->
+    @if (cameraError()) {
+      <div class="qr-modal__error">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ cameraError() }}
+      </div>
+    }
+
+    <!-- Result -->
+    @if (result()) {
+      <div class="qr-modal__result">
+        <p class="qr-modal__result-label">Scanned result:</p>
+        <div class="qr-modal__result-row">
+          <span class="qr-modal__result-value">{{ result() }}</span>
+          <button
+            class="qr-modal__copy-btn"
+            [class.qr-modal__copy-btn--copied]="isCopied()"
+            (click)="copyResult()"
+          >
+            @if (isCopied()) {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Copied!
+            } @else {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy
+            }
+          </button>
+        </div>
+        <button class="qr-modal__scan-again" (click)="restart()">Scan Again</button>
+      </div>
+    }
+
+  </div>
+</div>

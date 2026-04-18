@@ -1,0 +1,318 @@
+<div class="chat-page">
+  <!-- Header with mobile sidebar toggle -->
+  <app-header
+    [user]="user"
+    [isSidebarOpen]="isSidebarOpen()"
+    (newChannel)="openCreateModal()"
+    (startMeeting)="startMeeting()"
+    (joinMeeting)="openJoinModal()"
+    (toggleSidebar)="toggleSidebar()"
+  />
+
+  <!-- Chat Layout -->
+  <div class="chat-layout">
+
+    <!-- Sidebar: Channel List + Hidden tab -->
+    <aside class="chat-layout__sidebar" [class.chat-layout__sidebar--open]="isSidebarOpen()">
+
+      <!-- Mobile sidebar header -->
+      <div class="sidebar-mobile-header">
+        <span class="sidebar-mobile-header__title">Channels</span>
+        <button class="icon-btn" (click)="closeSidebar()" title="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Tab switcher -->
+      <div class="sidebar-tabs" role="tablist">
+        <button
+          class="sidebar-tab"
+          role="tab"
+          [class.sidebar-tab--active]="activeTab() === 'channels'"
+          [attr.aria-selected]="activeTab() === 'channels'"
+          (click)="activeTab.set('channels')"
+        >
+          Channels
+        </button>
+        <button
+          class="sidebar-tab"
+          role="tab"
+          [class.sidebar-tab--active]="activeTab() === 'hidden'"
+          [attr.aria-selected]="activeTab() === 'hidden'"
+          (click)="activeTab.set('hidden')"
+        >
+          Hidden
+          @if (hiddenChannels().length > 0) {
+            <span class="sidebar-tab__badge">{{ hiddenChannels().length }}</span>
+          }
+        </button>
+      </div>
+
+      <!-- New Channel button -->
+      <div class="sidebar-new-channel">
+        <button
+          class="new-channel-btn"
+          title="New Channel"
+          aria-label="Create new channel"
+          (click)="openCreateModal()"
+        >
+          <span class="new-channel-btn__circle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </span>
+          <span class="new-channel-btn__label">New Channel</span>
+        </button>
+      </div>
+
+      <!-- Channels tab: uses stream-channel-list with our custom preview template -->
+      <div
+        class="sidebar-panel"
+        role="tabpanel"
+        [style.display]="activeTab() === 'channels' ? 'flex' : 'none'"
+      >
+        <stream-channel-list />
+      </div>
+
+      <!-- Hidden tab: manual list of hidden channels -->
+      <div
+        class="sidebar-panel sidebar-panel--hidden"
+        role="tabpanel"
+        [style.display]="activeTab() === 'hidden' ? 'flex' : 'none'"
+      >
+        @if (hiddenChannels().length === 0) {
+          <div class="sidebar-empty">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+            <p>No hidden channels</p>
+          </div>
+        } @else {
+          @for (ch of hiddenChannels(); track ch.cid) {
+            <div
+              class="custom-preview custom-preview--compact"
+              [class.custom-preview--active]="activeChannelCid() === ch.cid"
+              (click)="selectChannel(ch)"
+              (contextmenu)="openContextMenu($event, ch)"
+              (keydown.enter)="selectChannel(ch)"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="getChannelName(ch)"
+            >
+              <div class="custom-preview__avatar">
+                @if (ch.data?.['image']) {
+                  <img [src]="ch.data?.['image']" [alt]="getChannelName(ch)" />
+                } @else {
+                  {{ getChannelInitials(ch) }}
+                }
+              </div>
+              <div class="custom-preview__info">
+                <span class="custom-preview__name">{{ getChannelName(ch) }}</span>
+                <span class="custom-preview__sub custom-preview__sub--hidden">Hidden</span>
+              </div>
+              <button
+                class="custom-preview__show-btn"
+                title="Show channel"
+                (click)="$event.stopPropagation(); onHideToggle(ch)"
+                tabindex="-1"
+                aria-label="Show channel"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          }
+        }
+      </div>
+
+    </aside>
+
+    <!-- Mobile overlay -->
+    @if (isSidebarOpen()) {
+      <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+    }
+
+    <!-- Main: Active Channel -->
+    <main class="chat-layout__main">
+      <stream-channel>
+        <stream-notification-list />
+        <stream-message-list />
+        <stream-message-input />
+      </stream-channel>
+    </main>
+
+  </div>
+
+  <!-- Create Channel Modal -->
+  @if (showCreateModal() && user) {
+    <app-create-channel-modal
+      [user]="user"
+      (closed)="closeCreateModal()"
+      (created)="closeCreateModal()"
+    />
+  }
+
+  <!-- Context Menu -->
+  @if (contextMenuState().visible && contextMenuState().channel) {
+    <app-channel-context-menu
+      [x]="contextMenuState().x"
+      [y]="contextMenuState().y"
+      [channel]="contextMenuState().channel!"
+      [isHidden]="hiddenIds().has(contextMenuState().channel!.cid)"
+      (editChannel)="onEditChannel($event)"
+      (hideToggle)="onHideToggle($event)"
+      (deleteChannel)="onDeleteChannel($event)"
+      (close)="closeContextMenu()"
+    />
+  }
+
+  <!-- Edit Channel Modal -->
+  @if (editChannelTarget()) {
+    <app-edit-channel-modal
+      [channel]="editChannelTarget()!"
+      [currentUserId]="user?.userId ?? ''"
+      (closed)="closeEditModal()"
+    />
+  }
+
+  <!-- ── Meeting Created modal ──────────────────────────────────────────── -->
+  @if (showMeetingCreatedModal()) {
+    <div class="cl-modal-backdrop" (click)="joinCreatedMeeting()">
+      <div class="cl-modal" role="dialog" aria-modal="true" aria-labelledby="meeting-created-title" (click)="$event.stopPropagation()">
+
+        <div class="cl-modal__header">
+          <div class="cl-modal__icon cl-modal__icon--success">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="23 7 16 12 23 17 23 7"/>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+            </svg>
+          </div>
+          <h2 id="meeting-created-title" class="cl-modal__title">Meeting Created</h2>
+        </div>
+
+        <p class="cl-modal__description">
+          Share the Meeting ID below with others so they can join.
+        </p>
+
+        <div class="cl-modal__id-row">
+          <span class="cl-modal__id-value">{{ createdMeetingId() }}</span>
+          <button
+            class="cl-modal__copy-btn"
+            [class.cl-modal__copy-btn--copied]="isMeetingIdCopied()"
+            (click)="copyCreatedMeetingId()"
+            type="button"
+            title="Copy Meeting ID"
+          >
+            @if (isMeetingIdCopied()) {
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Copied!
+            } @else {
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy ID
+            }
+          </button>
+        </div>
+
+        <div class="cl-modal__actions">
+          <button class="cl-modal__btn cl-modal__btn--primary" (click)="joinCreatedMeeting()" type="button">
+            Join Now
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ── Join Meeting modal ─────────────────────────────────────────────── -->
+  @if (showJoinModal()) {
+    <div class="cl-modal-backdrop" (click)="closeJoinModal()">
+      <div class="cl-modal" role="dialog" aria-modal="true" aria-labelledby="join-meeting-title" (click)="$event.stopPropagation()">
+
+        <div class="cl-modal__header">
+          <div class="cl-modal__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+          </div>
+          <h2 id="join-meeting-title" class="cl-modal__title">Join a Meeting</h2>
+        </div>
+
+        <p class="cl-modal__description">
+          Enter the Meeting ID shared by the host.
+        </p>
+
+        <div class="cl-modal__field">
+          <label class="cl-modal__label" for="meeting-id-input">Meeting ID</label>
+          <input
+            #meetingIdInput
+            id="meeting-id-input"
+            class="cl-modal__input"
+            [class.cl-modal__input--error]="joinError()"
+            type="text"
+            inputmode="text"
+            placeholder="e.g. a1b2c3d4"
+            autocomplete="off"
+            (keydown.enter)="joinMeeting(meetingIdInput)"
+            (input)="joinError.set('')"
+          />
+          @if (joinError()) {
+            <span class="cl-modal__error">{{ joinError() }}</span>
+          }
+        </div>
+
+        <div class="cl-modal__actions">
+          <button class="cl-modal__btn cl-modal__btn--ghost" (click)="closeJoinModal()" type="button">
+            Cancel
+          </button>
+          <button class="cl-modal__btn cl-modal__btn--primary" (click)="joinMeeting(meetingIdInput)" type="button">
+            Join
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>
+
+<!-- ── Custom channel preview template (registered with CustomTemplatesService) ── -->
+<ng-template #channelPreviewTpl let-channel="channel">
+  @if (!hiddenIds().has(channel.cid)) {
+    <div
+      class="custom-preview"
+      [class.custom-preview--active]="activeChannelCid() === channel.cid"
+      (click)="selectChannel(channel)"
+      (contextmenu)="openContextMenu($event, channel)"
+      (keydown.enter)="selectChannel(channel)"
+      role="button"
+      tabindex="0"
+      [attr.aria-label]="getChannelName(channel)"
+    >
+      <div class="custom-preview__avatar">
+        @if (channel.data?.['image']) {
+          <img [src]="channel.data?.['image']" [alt]="getChannelName(channel)" />
+        } @else {
+          {{ getChannelInitials(channel) }}
+        }
+      </div>
+      <div class="custom-preview__info">
+        <span class="custom-preview__name">{{ getChannelName(channel) }}</span>
+        <span class="custom-preview__sub">{{ getLastMessageText(channel) }}</span>
+      </div>
+    </div>
+  }
+</ng-template>

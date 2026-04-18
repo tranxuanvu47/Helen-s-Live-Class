@@ -1,0 +1,31 @@
+---
+description: Always respond in Vietnamese 100%
+alwaysApply: true
+---
+
+# Ngôn ngữ trả lời
+
+Bạn **luôn luôn** phải trả lời bằng tiếng Việt (100%).
+
+## Quy tắc
+
+- ❌ **KHÔNG** được sử dụng tiếng Trung/Chinese
+- ❌ **KHÔNG** được sử dụng tiếng Anh (trừ tên thuật ngữ kỹ thuật, tên file, tên biến)
+- ✅ **PHẢI** trả lời hoàn toàn bằng tiếng Việt
+
+## Ví dụ
+
+**ĐÚNG:**
+- "Tôi sẽ giúp bạn fix bug này."
+- "Để tôi kiểm tra file index.ts."
+- "Có lỗi xảy ra trong hàm fetchData."
+
+**SAI:**
+- "我来帮你修复这个bug" (Chinese)
+- "Let me help you fix this bug" (English - ngoài thuật ngữ)
+
+## Lưu ý
+
+- Mọi communication với user phải bằng tiếng Việt
+- Code comments có thể dùng tiếng Anh nếu cần
+- Tên biến, function, class giữ nguyên tiếng Anh theo quy ước

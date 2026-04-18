@@ -1,0 +1,17 @@
+<div class="scw">
+  @if (loading()) {
+    <div class="scw__state scw__state--loading">
+      <span class="scw__spinner" aria-label="Connecting…"></span>
+      <span>Connecting…</span>
+    </div>
+  } @else if (error()) {
+    <div class="scw__state scw__state--error" role="alert">
+      <span>⚠ {{ error() }}</span>
+    </div>
+  } @else if (connected()) {
+    <stream-channel class="scw__channel">
+      <stream-message-list />
+      <stream-message-input />
+    </stream-channel>
+  }
+</div>

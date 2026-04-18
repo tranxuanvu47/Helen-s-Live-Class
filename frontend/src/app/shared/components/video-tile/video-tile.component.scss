@@ -1,0 +1,89 @@
+:host {
+  display: block;
+}
+
+.video-tile {
+  position: relative;
+  background: var(--color-surface-3);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  border: 2px solid transparent;
+  transition: border-color var(--transition);
+
+  &--local {
+    border-color: rgba(99, 102, 241, 0.4);
+  }
+
+  &--no-video {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+
+    &--mirrored {
+      transform: scaleX(-1);
+    }
+  }
+
+  &__avatar {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-surface-3), var(--color-surface-2));
+
+    span {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    padding: 4px 10px;
+    border-radius: 20px;
+    max-width: calc(100% - 20px);
+  }
+
+  &__name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__you {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-primary);
+    background: rgba(99, 102, 241, 0.2);
+    padding: 1px 6px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+}
