@@ -32,43 +32,39 @@ export class CreateChannelModalComponent {
     });
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.form.invalid || this.isLoading()) return;
 
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    const { name, description, members: membersRaw } = this.form.value as {
-      name: string;
-      description: string;
-      members: string;
-    };
+    try {
+      const { name, description, members: membersRaw } = this.form.value as {
+        name: string;
+        description: string;
+        members: string;
+      };
 
-    const members = membersRaw
-      .split(',')
-      .map((m) => m.trim())
-      .filter(Boolean);
+      const memberList = membersRaw
+        ? membersRaw.split(',').map((m: string) => m.trim()).filter(Boolean)
+        : [];
 
-    this.chatService
-      .createChannel({
-        name: name.trim(),
-        description: description.trim(),
-        createdById: this.user.userId,
-        members,
-      })
-      .subscribe({
-        next: (res) => {
-          this.chatService.refreshChannels(this.user.userId);
-          this.created.emit(res.channelId);
-          this.close();
-        },
-        error: (err) => {
-          this.errorMessage.set(
-            err?.error?.error?.message ?? 'Failed to create channel.',
-          );
-          this.isLoading.set(false);
-        },
-      });
+      const memberIds = [...new Set([this.user.userId, ...memberList])];
+
+      const channel = await this.chatService.createChannel(memberIds, name.trim());
+
+      if (description.trim()) {
+        await channel.updatePartial({ set: { description: description.trim() } });
+      }
+
+      this.chatService.refreshChannels(this.user.userId);
+      this.created.emit(channel.id);
+      this.close();
+    } catch (err: unknown) {
+      const message = (err as { message?: string })?.message ?? 'Failed to create channel.';
+      this.errorMessage.set(message);
+      this.isLoading.set(false);
+    }
   }
 
   close(): void {

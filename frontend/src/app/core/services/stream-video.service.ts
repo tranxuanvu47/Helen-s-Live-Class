@@ -1,6 +1,5 @@
 import { Injectable, OnDestroy, NgZone } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import {
   StreamVideoClient,
   Call,
@@ -10,10 +9,6 @@ import {
 } from '@stream-io/video-client';
 
 import { environment } from '../../../environments/environment';
-import {
-  CreateMeetingRequest,
-  MeetingResponse,
-} from '../models/meeting.model';
 
 /** Discriminated union for all custom meeting events broadcast via sendCustomEvent(). */
 export type MeetingEvent =
@@ -43,7 +38,7 @@ export class StreamVideoService implements OnDestroy {
   /** Emits whenever any participant sends a custom meeting event. */
   readonly meetingEvents$ = new Subject<MeetingEvent>();
 
-  constructor(private http: HttpClient, private ngZone: NgZone) {}
+  constructor(private ngZone: NgZone) {}
 
   /** Initialise the video client once after login. */
   initClient(userId: string, userName: string, token: string, userImage?: string | null): void {
@@ -61,15 +56,7 @@ export class StreamVideoService implements OnDestroy {
     });
   }
 
-  /** Reserve a call-ID on the backend. */
-  createMeeting(payload: CreateMeetingRequest): Observable<MeetingResponse> {
-    return this.http.post<MeetingResponse>(
-      `${environment.apiUrl}/meetings`,
-      payload,
-    );
-  }
-
-  /** Join (or create) a video call by callId. */
+  /** Create and join a video call by callId (client-side, no backend required). */
   async joinCall(callId: string, callType = 'default'): Promise<void> {
     if (!this.client) throw new Error('Video client not initialised');
 
@@ -114,7 +101,6 @@ export class StreamVideoService implements OnDestroy {
     if (!this.call) return;
 
     if (this.isVideoPaused$.value) {
-      // Resume: stop the canvas stream and re-enable the real camera.
       if (this.frozenCanvasStream) {
         this.frozenCanvasStream.getTracks().forEach((t) => t.stop());
         this.frozenCanvasStream = null;
@@ -123,8 +109,6 @@ export class StreamVideoService implements OnDestroy {
       this.isCameraEnabled$.next(true);
       this.isVideoPaused$.next(false);
     } else {
-      // Pause: grab the current video track, paint one frame onto a canvas,
-      // then publish the canvas stream.
       const mediaStream = this.call.camera.state.mediaStream;
       const videoTrack = mediaStream?.getVideoTracks()[0];
       if (!videoTrack) return;
@@ -135,8 +119,6 @@ export class StreamVideoService implements OnDestroy {
       canvas.height = settings.height ?? 480;
       const ctx = canvas.getContext('2d');
 
-      // Draw the current frame from the live video element in the DOM, if
-      // available.  Fall back to a black frame if none is found.
       const liveVideo = document.querySelector<HTMLVideoElement>(
         '.meeting-room__local-preview video',
       );
@@ -144,7 +126,6 @@ export class StreamVideoService implements OnDestroy {
         ctx.drawImage(liveVideo, 0, 0, canvas.width, canvas.height);
       }
 
-      // captureStream(0) = static image (0 fps).
       this.frozenCanvasStream = (canvas as HTMLCanvasElement & {
         captureStream(fps?: number): MediaStream;
       }).captureStream(0);
@@ -209,7 +190,7 @@ export class StreamVideoService implements OnDestroy {
 
     const state = this.call.state;
 
-    const sub1 = (state.participants$ as Observable<StreamVideoParticipant[]>).subscribe(
+    const sub1 = state.participants$.subscribe(
       (participants) => {
         this.ngZone.run(() => {
           this.participants$.next(participants);
@@ -219,11 +200,11 @@ export class StreamVideoService implements OnDestroy {
       },
     );
 
-    const sub2 = (state.callingState$ as Observable<CallingState>).subscribe(
+    const sub2 = this.call.state.callingState$.subscribe(
       (cs) => this.ngZone.run(() => this.callingState$.next(cs)),
     );
 
-    const sub3 = (this.call.screenShare.state.status$ as Observable<InputDeviceStatus>).subscribe(
+    const sub3 = this.call.screenShare.state.status$.subscribe(
       (status) => this.ngZone.run(() => this.isScreenSharing$.next(status === 'enabled')),
     );
 
@@ -243,7 +224,6 @@ export class StreamVideoService implements OnDestroy {
 
       const meetingEvent = payload as unknown as MeetingEvent;
 
-      // Handle flashlight requests locally (applies torch to this device's camera).
       if (meetingEvent.type === 'flashlight') {
         this.applyTorch(meetingEvent.enabled);
       }

@@ -1,13 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { ChatClientService, ChannelService } from 'stream-chat-angular';
+import { StreamChat, Channel } from 'stream-chat';
 
 import { environment } from '../../../environments/environment';
-import {
-  CreateChannelRequest,
-  CreateChannelResponse,
-} from '../models/channel.model';
 
 /** Minimum ms between consecutive typing.start events per thread/channel. */
 const TYPING_START_THROTTLE_MS = 3_000;
@@ -17,11 +12,11 @@ const TYPING_STOP_DEBOUNCE_MS = 1_000;
 @Injectable({ providedIn: 'root' })
 export class StreamChatService implements OnDestroy {
   private connected = false;
+  private client: StreamChat | null = null;
 
   constructor(
     private chatClientService: ChatClientService,
     private channelService: ChannelService,
-    private http: HttpClient,
   ) {}
 
   /**
@@ -36,12 +31,12 @@ export class StreamChatService implements OnDestroy {
   ): Promise<void> {
     if (this.connected) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (this.chatClientService.init(
-      environment.streamApiKey,
-      { id: userId, name: userName, image: userImage ?? undefined } as any,
+    this.client = StreamChat.getInstance(environment.streamApiKey);
+
+    await this.client.connectUser(
+      { id: userId, name: userName, image: userImage ?? undefined },
       token,
-    ) as unknown as Promise<unknown>);
+    );
 
     this.channelService.init(
       { type: 'messaging', members: { $in: [userId] } },
@@ -88,14 +83,11 @@ export class StreamChatService implements OnDestroy {
     };
 
     this.channelService.typingStopped = async (parentId?: string) => {
-      // Nothing to stop if we never sent a typing.start
       if (!typingActive.has(parentId)) return;
 
       typingActive.delete(parentId);
-      // Reset so the next typing session fires typing.start immediately
       lastStartSent.delete(parentId);
 
-      // Cancel any pending debounced stop and reschedule
       const existing = stopTimers.get(parentId);
       if (existing !== undefined) clearTimeout(existing);
 
@@ -118,19 +110,26 @@ export class StreamChatService implements OnDestroy {
     );
   }
 
-  /** Create a channel on the backend, then refresh the list. */
-  createChannel(
-    payload: CreateChannelRequest,
-  ): Observable<CreateChannelResponse> {
-    return this.http.post<CreateChannelResponse>(
-      `${environment.apiUrl}/channels`,
-      payload,
-    );
+  /** Create a channel client-side using Stream Chat SDK. */
+  async createChannel(
+    memberIds: string[],
+    channelName?: string,
+  ): Promise<Channel> {
+    if (!this.client) throw new Error('Chat client not connected');
+
+    const channel = this.client.channel('messaging', {
+      members: memberIds,
+      name: channelName,
+    });
+
+    await channel.watch();
+    return channel;
   }
 
   async disconnect(): Promise<void> {
     if (!this.connected) return;
     await this.chatClientService.disconnectUser();
+    this.client = null;
     this.connected = false;
   }
 
