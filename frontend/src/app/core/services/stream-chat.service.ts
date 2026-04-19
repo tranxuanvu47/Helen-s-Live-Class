@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { ChatClientService, ChannelService } from 'stream-chat-angular';
-import { StreamChat, Channel } from 'stream-chat';
+import { ChatClientService, ChannelService, DefaultStreamChatGenerics } from 'stream-chat-angular';
+import { Channel } from 'stream-chat';
 
 import { environment } from '../../../environments/environment';
 
@@ -12,7 +12,6 @@ const TYPING_STOP_DEBOUNCE_MS = 1_000;
 @Injectable({ providedIn: 'root' })
 export class StreamChatService implements OnDestroy {
   private connected = false;
-  private client: StreamChat | null = null;
 
   constructor(
     private chatClientService: ChatClientService,
@@ -31,10 +30,9 @@ export class StreamChatService implements OnDestroy {
   ): Promise<void> {
     if (this.connected) return;
 
-    this.client = StreamChat.getInstance(environment.streamApiKey);
-
-    await this.client.connectUser(
-      { id: userId, name: userName, image: userImage ?? undefined },
+    await this.chatClientService.init(
+      environment.streamApiKey,
+      { id: userId, name: userName, image: userImage ?? undefined } as never,
       token,
     );
 
@@ -110,27 +108,35 @@ export class StreamChatService implements OnDestroy {
     );
   }
 
-  /** Create a channel client-side using Stream Chat SDK. */
+  /** Create a channel client-side using SDK. */
   async createChannel(
     memberIds: string[],
     channelName?: string,
-  ): Promise<Channel> {
-    if (!this.client) throw new Error('Chat client not connected');
+  ): Promise<Channel<DefaultStreamChatGenerics>> {
+    const client = this.chatClientService.chatClient;
+    if (!client) throw new Error('Chat client not connected');
 
-    const channel = this.client.channel('messaging', {
+    const channel = client.channel('messaging', {
       members: memberIds,
-      name: channelName,
     });
 
-    await channel.watch();
-    return channel;
+    await channel.create();
+
+    if (channelName) {
+      await channel.updatePartial({ set: { name: channelName } });
+    }
+
+    return channel as Channel<DefaultStreamChatGenerics>;
   }
 
   async disconnect(): Promise<void> {
     if (!this.connected) return;
     await this.chatClientService.disconnectUser();
-    this.client = null;
     this.connected = false;
+  }
+
+  getClient() {
+    return this.chatClientService.chatClient ?? null;
   }
 
   ngOnDestroy(): void {

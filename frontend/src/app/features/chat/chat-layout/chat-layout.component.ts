@@ -15,12 +15,14 @@ import { Router } from '@angular/router';
 import { Channel } from 'stream-chat';
 import { ChannelService, CustomTemplatesService, DefaultStreamChatGenerics, StreamChatModule } from 'stream-chat-angular';
 import { Subscription, combineLatest } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { StreamChatService } from '../../../core/services/stream-chat.service';
 import { StreamVideoService } from '../../../core/services/stream-video.service';
 import { ChannelHideService } from '../../../core/services/channel-hide.service';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
+import { MeetingInviteToastComponent } from '../../../shared/components/meeting-invite-toast/meeting-invite-toast.component';
 import { CreateChannelModalComponent } from '../create-channel-modal/create-channel-modal.component';
 import { ChannelContextMenuComponent } from '../channel-context-menu/channel-context-menu.component';
 import { EditChannelModalComponent } from '../edit-channel-modal/edit-channel-modal.component';
@@ -43,6 +45,7 @@ interface ContextMenuState {
     CommonModule,
     StreamChatModule,
     HeaderComponent,
+    MeetingInviteToastComponent,
     CreateChannelModalComponent,
     ChannelContextMenuComponent,
     EditChannelModalComponent,
@@ -278,23 +281,19 @@ export class ChatLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.user || this.isStartingMeeting()) return;
     this.isStartingMeeting.set(true);
 
-    this.videoService
-      .createMeeting({ createdById: this.user.userId })
-      .subscribe({
-        next: (res) => {
-          this.isStartingMeeting.set(false);
-          this.createdMeetingId.set(res.callId);
-          this.isMeetingIdCopied.set(false);
-          this.showMeetingCreatedModal.set(true);
-          navigator.clipboard.writeText(res.callId).then(() => {
-            this.isMeetingIdCopied.set(true);
-          }).catch(console.error);
-        },
-        error: (err) => {
-          console.error('Failed to create meeting', err);
-          this.isStartingMeeting.set(false);
-        },
-      });
+    try {
+      const callId = uuidv4();
+      this.createdMeetingId.set(callId);
+      this.isMeetingIdCopied.set(false);
+      this.showMeetingCreatedModal.set(true);
+      this.isStartingMeeting.set(false);
+
+      await navigator.clipboard.writeText(callId);
+      this.isMeetingIdCopied.set(true);
+    } catch (err) {
+      console.error('Failed to create meeting', err);
+      this.isStartingMeeting.set(false);
+    }
   }
 
   joinCreatedMeeting(): void {

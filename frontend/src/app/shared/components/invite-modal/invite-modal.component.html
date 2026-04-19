@@ -1,0 +1,78 @@
+<div class="invite-backdrop" (click)="close()">
+  <div class="invite-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+    <div class="invite-modal__header">
+      <div class="invite-modal__icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="8.5" cy="7" r="4"/>
+          <line x1="20" y1="8" x2="20" y2="14"/>
+          <line x1="23" y1="11" x2="17" y2="11"/>
+        </svg>
+      </div>
+      <h2 class="invite-modal__title">Invite to Meeting</h2>
+      <button class="invite-modal__close" (click)="close()" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <p class="invite-modal__subtitle">
+      Meeting ID: <code>{{ callId }}</code>
+    </p>
+
+    <div class="invite-modal__search">
+      <svg class="invite-modal__search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        class="invite-modal__search-input"
+        type="text"
+        placeholder="Search users by name or ID..."
+        [(ngModel)]="searchQuery"
+        (input)="searchUsers()"
+        autocomplete="off"
+      />
+      @if (isSearching()) {
+        <div class="invite-modal__search-spinner"></div>
+      }
+    </div>
+
+    <div class="invite-modal__results">
+      @if (searchResults().length === 0 && searchQuery.trim()) {
+        <div class="invite-modal__empty">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <p>No users found</p>
+        </div>
+      } @else if (searchResults().length > 0) {
+        @for (user of searchResults(); track user.id) {
+          <div class="invite-user">
+            <div class="invite-user__avatar">
+              @if (user.image) {
+                <img [src]="user.image" [alt]="user.name" />
+              } @else {
+                {{ getInitials(user.name) }}
+              }
+            </div>
+            <span class="invite-user__name">{{ user.name }}</span>
+            @if (user.invited) {
+              <span class="invite-user__sent">Invited</span>
+            } @else {
+              <button class="invite-user__btn" (click)="inviteUser(user)">
+                Invite
+              </button>
+            }
+          </div>
+        }
+      } @else {
+        <div class="invite-modal__hint">
+          <p>Start typing to search for users to invite.</p>
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

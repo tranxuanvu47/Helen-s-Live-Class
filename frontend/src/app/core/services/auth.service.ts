@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { StreamChat } from 'stream-chat';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { SignJWT } from 'jose';
 import { v4 as uuidv4 } from 'uuid';
 
 import { environment } from '../../../environments/environment';
@@ -27,25 +27,27 @@ export class AuthService {
     return this.currentUserSubject.value !== null;
   }
 
-  login(payload: LoginRequest): Observable<AuthResponse> {
+  private async createStreamToken(userId: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const secret = encoder.encode(environment.streamApiSecret);
+
+    const expiresAt = Math.floor(Date.now() / 1000) + 86_400;
+
+    const token = await new SignJWT({ user_id: userId })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime(expiresAt)
+      .sign(secret);
+
+    return token;
+  }
+
+  async login(payload: LoginRequest): Promise<AuthResponse> {
     const userId = payload.userId.trim();
     const userName = payload.userName.trim();
     const userImage = payload.userImage || undefined;
 
-    const serverClient = StreamChat.getInstance(
-      environment.streamApiKey,
-      environment.streamApiSecret,
-    );
-
-    serverClient.upsertUser({
-      id: userId,
-      name: userName,
-      image: userImage,
-      role: 'user',
-    });
-
-    const expiresAt = Math.floor(Date.now() / 1000) + 86_400;
-    const token = serverClient.createToken(userId, expiresAt);
+    const token = await this.createStreamToken(userId);
 
     const response: AuthResponse = {
       token,
@@ -59,26 +61,15 @@ export class AuthService {
     this.persist(user);
     this.currentUserSubject.next(user);
 
-    return new Observable((observer) => {
-      observer.next(response);
-      observer.complete();
-    });
+    return response;
   }
 
-  loginAsGuest(): Observable<AuthResponse> {
+  async loginAsGuest(): Promise<AuthResponse> {
     const suffix = uuidv4().replace(/-/g, '').slice(0, 8);
     const userId = `guest_${suffix}`;
     const userName = `Guest ${suffix.slice(0, 4).toUpperCase()}`;
 
-    const serverClient = StreamChat.getInstance(
-      environment.streamApiKey,
-      environment.streamApiSecret,
-    );
-
-    serverClient.upsertUser({ id: userId, name: userName, role: 'user' });
-
-    const expiresAt = Math.floor(Date.now() / 1000) + 86_400;
-    const token = serverClient.createToken(userId, expiresAt);
+    const token = await this.createStreamToken(userId);
 
     const response: AuthResponse = {
       token,
@@ -92,10 +83,7 @@ export class AuthService {
     this.persist(user);
     this.currentUserSubject.next(user);
 
-    return new Observable((observer) => {
-      observer.next(response);
-      observer.complete();
-    });
+    return response;
   }
 
   logout(): void {

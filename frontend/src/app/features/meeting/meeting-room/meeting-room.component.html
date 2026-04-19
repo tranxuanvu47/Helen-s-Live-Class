@@ -1,28 +1,53 @@
 <div class="meeting-room">
 
   <!-- Topbar -->
-  <div class="meeting-room__topbar">
+  <div class="meeting-room__topbar" [class.meeting-room__topbar--hidden]="!topbarVisible()">
     <div class="meeting-room__info">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button class="meeting-room__back-btn" (click)="goBack()" title="Back to chat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <svg class="meeting-room__info-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polygon points="23 7 16 12 23 17 23 7"/>
         <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
       </svg>
       <span class="meeting-room__call-id">{{ callId }}</span>
-      <span class="meeting-room__count">{{ participantCount }} participant{{ participantCount !== 1 ? 's' : '' }}</span>
+      <span class="meeting-room__count">{{ participantCount }}</span>
     </div>
 
-    <button class="btn btn--ghost btn--sm" (click)="copyInviteLink()" title="Copy invite link">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-      </svg>
-      Copy Invite Link
-    </button>
+    <div class="meeting-room__topbar-actions">
+      <!-- Invite -->
+      <button class="btn btn--ghost btn--sm" (click)="openInviteModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="8.5" cy="7" r="4"/>
+          <line x1="20" y1="8" x2="20" y2="14"/>
+          <line x1="23" y1="11" x2="17" y2="11"/>
+        </svg>
+        Invite
+      </button>
+      <!-- Mobile: show copy link as icon only -->
+      <button class="icon-btn hide-desktop" (click)="copyInviteLink()" title="Copy invite link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </button>
+      <button class="btn btn--ghost btn--sm show-desktop" (click)="copyInviteLink()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        Copy Invite
+      </button>
+    </div>
   </div>
 
+  <!-- Loading -->
   @if (isJoining()) {
     <div class="meeting-room__loading">
-      <div class="spinner" style="width:40px;height:40px;border-width:3px"></div>
+      <div class="spinner" style="width:44px;height:44px;border-width:3px"></div>
       <p>Joining meeting…</p>
     </div>
   }
@@ -38,7 +63,7 @@
     <div class="meeting-room__content">
 
       @if (screenSharingParticipant && !screenSharingParticipant.isLocalParticipant) {
-        <!-- ── Screen share presenter view ────────────────────────────────── -->
+        <!-- Screen share view -->
         <div class="meeting-room__screen-share-area" #remoteAreaRef>
           <app-video-tile
             [participant]="screenSharingParticipant"
@@ -49,7 +74,6 @@
           <div class="meeting-room__screen-share-label">
             {{ screenSharingParticipant.name + ' is presenting' }}
           </div>
-          <!-- Drawing overlay -->
           <app-drawing-canvas [mode]="drawingMode()" [color]="drawingColor()" />
         </div>
 
@@ -66,48 +90,102 @@
           </div>
         }
       } @else {
-        <!-- ── Normal camera grid ─────────────────────────────────────────── -->
+        <!-- Normal camera grid -->
         @if (isScreenSharing()) {
           <div class="meeting-room__presenting-banner">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
               <line x1="8" y1="21" x2="16" y2="21"/>
               <line x1="12" y1="17" x2="12" y2="21"/>
             </svg>
-            You are presenting your screen to others
+            You are presenting your screen
           </div>
         }
+
         <div class="meeting-room__remote-area" #remoteAreaRef>
           @if (remoteParticipants.length > 0) {
-            @for (participant of remoteParticipants; track participant.sessionId) {
+            <!-- 1 participant: full screen -->
+            @if (remoteParticipants.length === 1) {
               <app-video-tile
-                [participant]="participant"
+                [participant]="remoteParticipants[0]"
                 [isLocal]="false"
-                class="meeting-room__remote-tile"
+                class="meeting-room__remote-tile meeting-room__remote-tile--single"
               />
+            }
+            <!-- 2 participants: side by side -->
+            @if (remoteParticipants.length === 2) {
+              @for (participant of remoteParticipants; track participant.sessionId) {
+                <app-video-tile
+                  [participant]="participant"
+                  [isLocal]="false"
+                  class="meeting-room__remote-tile"
+                />
+              }
+            }
+            <!-- 3-4 participants: 2x2 grid -->
+            @if (remoteParticipants.length >= 3 && remoteParticipants.length <= 4) {
+              <div class="meeting-room__grid-2x2">
+                @for (participant of remoteParticipants; track participant.sessionId) {
+                  <app-video-tile
+                    [participant]="participant"
+                    [isLocal]="false"
+                    class="meeting-room__remote-tile"
+                  />
+                }
+              </div>
+            }
+            <!-- 5+ participants: scrollable grid -->
+            @if (remoteParticipants.length > 4) {
+              <div class="meeting-room__grid-many">
+                @for (participant of remoteParticipants; track participant.sessionId) {
+                  <app-video-tile
+                    [participant]="participant"
+                    [isLocal]="false"
+                    class="meeting-room__remote-tile meeting-room__remote-tile--many"
+                  />
+                }
+              </div>
             }
           } @else {
             <div class="meeting-room__waiting">
-              <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
               <p>Waiting for others to join…</p>
-              <p class="meeting-room__waiting-hint">Share the invite link to invite participants</p>
+              <p class="meeting-room__waiting-hint">Share the invite link</p>
             </div>
           }
-          <!-- Drawing overlay (shown in normal view too) -->
           <app-drawing-canvas [mode]="drawingMode()" [color]="drawingColor()" />
         </div>
       }
 
-      <!-- ── Bottom bar ────────────────────────────────────────────────────── -->
+      <!-- Bottom bar -->
       <div class="meeting-room__bottom-bar">
 
-        <!-- Local video preview -->
-        <div class="meeting-room__local-preview">
+        <!-- Mobile: participant name + status row -->
+        <div class="meeting-room__user-info-mobile show-mobile-only">
+          <span class="meeting-room__user-name">{{ localParticipant?.name ?? 'You' }}</span>
+          <div class="meeting-room__mic-status" [class.meeting-room__mic-status--off]="!isMicEnabled()">
+            @if (isMicEnabled()) {
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              </svg>
+            } @else {
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="1" y1="1" x2="23" y2="23"/>
+                <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+              </svg>
+            }
+            {{ isMicEnabled() ? 'Mic on' : 'Mic off' }}
+          </div>
+        </div>
+
+        <!-- Local preview PiP — left on mobile, right on desktop -->
+        <div class="meeting-room__local-preview" [class.meeting-room__local-preview--floating]="!isMobile()">
           @if (localParticipant) {
             <app-video-tile
               [participant]="localParticipant"
@@ -115,243 +193,203 @@
               [mirrored]="isMirrored()"
             />
             @if (isVideoPaused()) {
-              <div class="meeting-room__paused-badge">Paused</div>
+              <div class="meeting-room__badge meeting-room__badge--paused">Paused</div>
             }
             @if (isVoiceOnly()) {
-              <div class="meeting-room__voice-badge">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <div class="meeting-room__badge meeting-room__badge--voice">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
                   <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
                 </svg>
-                Voice
+              </div>
+            }
+            @if (!isCameraEnabled() && !isVoiceOnly()) {
+              <div class="meeting-room__badge meeting-room__badge--nocam">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                  <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
+                </svg>
               </div>
             }
           }
         </div>
 
-        <!-- Personal details -->
-        <div class="meeting-room__user-details">
-          <span class="meeting-room__user-name">{{ localParticipant?.name ?? 'You' }}</span>
-          <div class="meeting-room__status-row">
-            <span class="meeting-room__status-badge" [class.meeting-room__status-badge--off]="!isMicEnabled()">
-              @if (isMicEnabled()) {
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                </svg>
-              } @else {
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <line x1="1" y1="1" x2="23" y2="23"/>
-                  <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
-                </svg>
-              }
-              {{ isMicEnabled() ? 'Mic on' : 'Mic off' }}
-            </span>
-            <span class="meeting-room__status-badge" [class.meeting-room__status-badge--off]="!isCameraEnabled()">
-              @if (isCameraEnabled()) {
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polygon points="23 7 16 12 23 17 23 7"/>
-                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                </svg>
-              } @else {
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <line x1="1" y1="1" x2="23" y2="23"/>
-                  <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
-                </svg>
-              }
-              {{ isCameraEnabled() ? 'Cam on' : 'Cam off' }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Controls -->
+        <!-- Primary controls: Mic, Camera, Leave — always visible -->
         <div class="meeting-room__controls">
-
-          <!-- Mute -->
-          <button class="control-btn" [class.control-btn--off]="!isMicEnabled()" (click)="toggleMic()"
-            [title]="isMicEnabled() ? 'Mute microphone' : 'Unmute microphone'">
+          <!-- Mic -->
+          <button class="ctrl-btn" [class.ctrl-btn--off]="!isMicEnabled()" (click)="toggleMic()">
             @if (isMicEnabled()) {
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
                 <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
               </svg>
             } @else {
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="1" y1="1" x2="23" y2="23"/>
                 <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
                 <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/>
                 <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
               </svg>
             }
-            <span>{{ isMicEnabled() ? 'Mute' : 'Unmute' }}</span>
           </button>
 
           <!-- Camera -->
-          <button class="control-btn" [class.control-btn--off]="!isCameraEnabled()" (click)="toggleCamera()"
-            [title]="isCameraEnabled() ? 'Turn off camera' : 'Turn on camera'">
+          <button class="ctrl-btn" [class.ctrl-btn--off]="!isCameraEnabled()" (click)="toggleCamera()">
             @if (isCameraEnabled()) {
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="23 7 16 12 23 17 23 7"/>
                 <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
               </svg>
             } @else {
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34l1 1L23 7v10"/>
                 <line x1="1" y1="1" x2="23" y2="23"/>
               </svg>
             }
-            <span>{{ isCameraEnabled() ? 'Stop Video' : 'Start Video' }}</span>
           </button>
 
-          <!-- Pause Video -->
-          <button class="control-btn" [class.control-btn--active]="isVideoPaused()" (click)="toggleVideoPause()"
-            title="Pause / resume video (freeze frame)">
-            @if (isVideoPaused()) {
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-              </svg>
-            } @else {
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
-              </svg>
-            }
-            <span>{{ isVideoPaused() ? 'Resume' : 'Pause' }}</span>
-          </button>
-
-          <!-- Voice Only -->
-          <button class="control-btn" [class.control-btn--active]="isVoiceOnly()" (click)="toggleVoiceOnly()"
-            title="Switch to voice-only call">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.64 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 3.09 4.18 2 2 0 0 1 5.06 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-            </svg>
-            <span>{{ isVoiceOnly() ? 'Video Call' : 'Voice Call' }}</span>
-          </button>
-
-          <!-- Screen share -->
-          <button class="control-btn" [class.control-btn--active]="isScreenSharing()" (click)="toggleScreenShare()"
-            [title]="isScreenSharing() ? 'Stop sharing screen' : 'Share your screen'">
+          <!-- Screen Share -->
+          <button class="ctrl-btn" [class.ctrl-btn--active]="isScreenSharing()" (click)="toggleScreenShare()">
             @if (isScreenSharing()) {
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-                <line x1="5" y1="7" x2="19" y2="17"/><line x1="19" y1="7" x2="5" y2="17"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+                <line x1="5" y1="7" x2="19" y2="17"/>
+                <line x1="19" y1="7" x2="5" y2="17"/>
               </svg>
             } @else {
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-                <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="13"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
               </svg>
             }
-            <span>{{ isScreenSharing() ? 'Stop Share' : 'Share Screen' }}</span>
           </button>
 
-          <!-- Screenshot -->
-          <button class="control-btn" (click)="captureScreenshot()" title="Capture screenshot and save">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-              <circle cx="12" cy="13" r="4"/>
-            </svg>
-            <span>Capture</span>
-          </button>
-
-          <!-- Draw on screen -->
-          <button class="control-btn" [class.control-btn--active]="drawingMode() === 'draw'"
-            (click)="setDrawingMode('draw')" title="Draw on screen (visible to all)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 20h9"/>
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-            </svg>
-            <span>Draw</span>
-          </button>
-
-          <!-- Erase -->
-          <button class="control-btn" [class.control-btn--active]="drawingMode() === 'erase'"
-            (click)="setDrawingMode('erase')" title="Erase drawing">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 20H7L3 16l10-10 7 7-3 3"/>
-              <path d="M6.26 6.26L20 20"/>
-            </svg>
-            <span>Erase</span>
-          </button>
-
-          <!-- Clear canvas -->
-          @if (isDrawingActive) {
-            <button class="control-btn control-btn--off" (click)="clearDrawing()" title="Clear all drawings">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6l-1 14H6L5 6"/>
-                <path d="M10 11v6"/><path d="M14 11v6"/>
-                <path d="M9 6V4h6v2"/>
-              </svg>
-              <span>Clear</span>
-            </button>
-          }
-
-          <!-- Live pointer -->
-          <button class="control-btn" [class.control-btn--active]="drawingMode() === 'pointer'"
-            (click)="setDrawingMode('pointer')" title="Live pointer (visible to all)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 0l16 12-7 1-4 8z"/>
-            </svg>
-            <span>Pointer</span>
-          </button>
-
-          <!-- QR Scanner -->
-          <button class="control-btn" (click)="openQrScanner()" title="Scan QR code or barcode">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-              <path d="M14 14h3v3h-3z"/><path d="M17 17h4"/><path d="M17 21v-4"/>
-            </svg>
-            <span>Scan QR</span>
-          </button>
-
-          <!-- Flashlight (remote mobile) -->
-          <button class="control-btn" [class.control-btn--active]="flashlightOn()"
-            (click)="toggleRemoteFlashlight()" title="Request remote participant to toggle flashlight (mobile only)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-            </svg>
-            <span>{{ flashlightOn() ? 'Flash Off' : 'Flash On' }}</span>
-          </button>
-
-          <!-- Mirror -->
-          <button class="control-btn" [class.control-btn--active]="isMirrored()" (click)="toggleMirror()" title="Flip camera mirror">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3"/>
-              <path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/>
-              <line x1="12" y1="3" x2="12" y2="21"/>
-            </svg>
-            <span>{{ isMirrored() ? 'Mirrored' : 'Mirror' }}</span>
-          </button>
-
-          <!-- Leave -->
-          <button class="control-btn control-btn--leave" (click)="leaveCall()" title="Leave meeting">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <!-- Leave — highlighted red -->
+          <button class="ctrl-btn ctrl-btn--leave" (click)="leaveCall()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07C9.44 17.29 7.76 15.32 6.32 13"/>
               <path d="M6.69 6.69A19.79 19.79 0 0 0 3.27 15.1 2 2 0 0 0 5 17.18h3a2 2 0 0 0 2-1.72 12.84 12.84 0 0 1 .7-2.81 2 2 0 0 0-.45-2.11L8.09 8.09"/>
               <line x1="1" y1="1" x2="23" y2="23"/>
             </svg>
-            <span>Leave</span>
           </button>
 
-          <!-- End for all -->
-          @if (isHost()) {
-            <button class="control-btn control-btn--end-all" (click)="endCallForAll()" title="End meeting for everyone">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/>
-              </svg>
-              <span>End for All</span>
-            </button>
-          }
-
+          <!-- Overflow menu trigger — desktop only shows label -->
+          <button class="ctrl-btn ctrl-btn--overflow" (click)="toggleOverflow()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+            </svg>
+            <span class="ctrl-btn__label show-desktop">More</span>
+          </button>
         </div>
+
       </div>
 
     </div>
+  }
+
+  <!-- Overflow menu (mobile-friendly sheet + desktop dropdown) -->
+  @if (showOverflow()) {
+    <div class="meeting-room__overflow-backdrop" (click)="closeOverflow()"></div>
+    <div class="meeting-room__overflow-sheet" [class.meeting-room__overflow-sheet--mobile]="isMobile()">
+          <!-- Draw sub-section -->
+          <div class="overflow-section">
+            <span class="overflow-section__title">Drawing</span>
+            <div class="overflow-row">
+              <button class="overflow-btn" [class.overflow-btn--active]="drawingMode() === 'draw'" (click)="handleOverflowAction('draw')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                Draw
+              </button>
+              <button class="overflow-btn" [class.overflow-btn--active]="drawingMode() === 'pointer'" (click)="handleOverflowAction('pointer')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 0l16 12-7 1-4 8z"/>
+                </svg>
+                Pointer
+              </button>
+              @if (isDrawingActive) {
+                <button class="overflow-btn" (click)="clearDrawing()">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14H6L5 6"/>
+                  </svg>
+                  Clear
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- More actions -->
+          <div class="overflow-section">
+            <span class="overflow-section__title">More</span>
+            <div class="overflow-row">
+              <button class="overflow-btn" [class.overflow-btn--active]="isVoiceOnly()" (click)="handleOverflowAction('voice')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 5.06 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                {{ isVoiceOnly() ? 'Video Call' : 'Voice Only' }}
+              </button>
+              <button class="overflow-btn" [class.overflow-btn--active]="isVideoPaused()" (click)="handleOverflowAction('pause')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
+                </svg>
+                {{ isVideoPaused() ? 'Resume' : 'Pause' }}
+              </button>
+              <button class="overflow-btn" [class.overflow-btn--active]="isMirrored()" (click)="handleOverflowAction('mirror')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3"/>
+                  <path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/>
+                  <line x1="12" y1="3" x2="12" y2="21"/>
+                </svg>
+                Mirror
+              </button>
+              <button class="overflow-btn" (click)="handleOverflowAction('screenshot')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                Capture
+              </button>
+              <button class="overflow-btn" (click)="handleOverflowAction('qr')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/>
+                  <path d="M14 14h3v3h-3z"/><path d="M17 17h4"/><path d="M17 21v-4"/>
+                </svg>
+                Scan QR
+              </button>
+              <button class="overflow-btn" [class.overflow-btn--active]="flashlightOn()" (click)="handleOverflowAction('flashlight')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                {{ flashlightOn() ? 'Flash Off' : 'Flash On' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Host actions -->
+          @if (isHost()) {
+            <div class="overflow-section overflow-section--danger">
+              <button class="overflow-btn overflow-btn--danger" (click)="endCallForAll(); closeOverflow()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                </svg>
+                End for All
+              </button>
+            </div>
+      }
+    </div>
+  }
+
+  <!-- Invite Modal -->
+  @if (showInviteModal()) {
+    <app-invite-modal [callId]="callId" (closed)="closeInviteModal()" />
   }
 
   <!-- QR Scanner Modal -->

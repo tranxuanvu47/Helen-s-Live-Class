@@ -46,23 +46,15 @@ export class LoginComponent {
         userImage: string;
       };
 
-      const res = this.auth.login({
+      const res = await this.auth.login({
         userId: userId.trim(),
         userName: userName.trim(),
         userImage: userImage || undefined,
       });
 
-      res.subscribe({
-        next: async (authRes) => {
-          await this.chatService.connect(authRes.userId, authRes.userName, authRes.token, authRes.userImage);
-          this.videoService.initClient(authRes.userId, authRes.userName, authRes.token, authRes.userImage);
-          this.router.navigate(['/chat']);
-        },
-        error: (err) => {
-          this.errorMessage.set(err?.message ?? 'Login failed. Please try again.');
-          this.isLoading.set(false);
-        },
-      });
+      await this.chatService.connect(res.userId, res.userName, res.token, res.userImage);
+      this.videoService.initClient(res.userId, res.userName, res.token, res.userImage);
+      this.router.navigate(['/chat']);
     } catch (err: unknown) {
       this.errorMessage.set((err as Error)?.message ?? 'Login failed. Please try again.');
       this.isLoading.set(false);
@@ -76,19 +68,11 @@ export class LoginComponent {
     this.errorMessage.set('');
 
     try {
-      const res = this.auth.loginAsGuest();
+      const res = await this.auth.loginAsGuest();
 
-      res.subscribe({
-        next: async (authRes) => {
-          await this.chatService.connect(authRes.userId, authRes.userName, authRes.token, authRes.userImage);
-          this.videoService.initClient(authRes.userId, authRes.userName, authRes.token, authRes.userImage);
-          this.router.navigate(['/chat']);
-        },
-        error: (err) => {
-          this.errorMessage.set(err?.message ?? 'Guest login failed.');
-          this.isLoading.set(false);
-        },
-      });
+      await this.chatService.connect(res.userId, res.userName, res.token, res.userImage);
+      this.videoService.initClient(res.userId, res.userName, res.token, res.userImage);
+      this.router.navigate(['/chat']);
     } catch (err: unknown) {
       this.errorMessage.set((err as Error)?.message ?? 'Guest login failed.');
       this.isLoading.set(false);

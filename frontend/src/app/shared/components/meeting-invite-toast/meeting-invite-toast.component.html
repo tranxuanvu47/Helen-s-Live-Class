@@ -1,0 +1,41 @@
+@if (visible() && currentInvite()) {
+  <div class="invite-toast" role="alert" aria-live="polite">
+    <div class="invite-toast__host">
+      <div class="invite-toast__avatar">
+        @if (currentInvite()!.hostImage) {
+          <img [src]="currentInvite()!.hostImage" [alt]="currentInvite()!.hostName" />
+        } @else {
+          {{ getInitials(currentInvite()!.hostName) }}
+        }
+      </div>
+      <div class="invite-toast__host-info">
+        <span class="invite-toast__label">Meeting invite</span>
+        <span class="invite-toast__host-name">{{ currentInvite()!.hostName }} invited you</span>
+        <span class="invite-toast__time">{{ getTimeAgo(currentInvite()!.timestamp) }}</span>
+      </div>
+      <button class="invite-toast__skip" (click)="skipToNext()" title="Skip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="invite-toast__actions">
+      <span class="invite-toast__meeting-id">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="23 7 16 12 23 17 23 7"/>
+          <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+        </svg>
+        {{ currentInvite()!.callId }}
+      </span>
+      @if (unreadCount > 1) {
+        <span class="invite-toast__count">{{ unreadCount }} invites</span>
+      }
+      <button class="invite-toast__join-btn" (click)="joinMeeting()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        Join
+      </button>
+    </div>
+  </div>
+}
