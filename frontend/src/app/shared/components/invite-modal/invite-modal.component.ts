@@ -84,12 +84,13 @@ export class InviteModalComponent implements OnInit {
         this.currentUser.userImage ?? undefined,
       );
 
+      const meetingUrl = `https://helen-liveclass.web.app/meeting/${this.callId}`;
       const channel = await this.chatService.createChannel(
         [this.currentUser.userId, user.id],
         `${this.currentUser.userName} invited you to a meeting`,
       );
       await channel.sendMessage({
-        text: `${this.currentUser.userName} invited you to join meeting: ${this.callId}`,
+        text: `${this.currentUser.userName} invited you to join the meeting.\n\nJoin here: ${meetingUrl}`,
         metadata: {
           type: 'meeting_invite',
           callId: this.callId,

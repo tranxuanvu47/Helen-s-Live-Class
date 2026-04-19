@@ -655,6 +655,12 @@
       color: #1a1a1a !important;
       margin: 0 !important;
     }
+
+    a, a:visited {
+      color: #005691 !important;
+      text-decoration: underline !important;
+      word-break: break-all;
+    }
   }
 
   // ── Own (sent) messages ──────────────────────────────────────────────────
@@ -669,6 +675,7 @@
       box-shadow: 0 1px 3px rgba(0, 86, 145, 0.25) !important;
 
       p { color: #ffffff !important; }
+      a, a:visited { color: #cce4ff !important; text-decoration: underline !important; word-break: break-all; }
     }
   }
 
